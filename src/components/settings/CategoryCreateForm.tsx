@@ -6,6 +6,7 @@ import { FormAlert } from '#/components/auth/AuthCard'
 import { useCreateCategory } from '#/lib/categories/queries'
 import {
   RequestTimeoutError,
+  SessionNotReadyError,
   extractErrorMessage,
   withTimeout,
 } from '#/lib/errors'
@@ -50,9 +51,11 @@ export function CategoryCreateForm({ onCreated }: { onCreated?: () => void }) {
     } catch (cause) {
       setSuccess(false)
       setError(
-        cause instanceof RequestTimeoutError
-          ? t('errors.timeout')
-          : extractErrorMessage(cause, t('settings.category.createError')),
+        cause instanceof SessionNotReadyError
+          ? t('errors.sessionNotReady')
+          : cause instanceof RequestTimeoutError
+            ? t('errors.timeout')
+            : extractErrorMessage(cause, t('settings.category.createError')),
       )
     } finally {
       setPending(false)

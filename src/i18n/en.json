@@ -224,7 +224,8 @@
     "backToDashboard": "Back to the dashboard"
   },
   "errors": {
-    "timeout": "The connection timed out. Check your network and try again."
+    "timeout": "The connection timed out. Check your network and try again.",
+    "sessionNotReady": "Your session is not ready yet. Wait a few seconds and try again."
   },
   "onboarding": {
     "welcomeTitle": "Welcome to Finance App 👋",

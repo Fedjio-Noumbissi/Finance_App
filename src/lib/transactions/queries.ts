@@ -5,6 +5,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 
+import { waitForServerSession } from '#/lib/auth/store'
 import { useCurrencyReady } from '#/lib/currency/queries'
 import { statsKeys } from '#/lib/stats/keys'
 
@@ -24,6 +25,7 @@ export const transactionKeys = {
     [...transactionKeys.all, 'list', filters] as const,
 }
 
+
 export function transactionListQueryOptions(filters: TransactionFilters) {
   return queryOptions({
     queryKey: transactionKeys.list(filters),
@@ -34,7 +36,10 @@ export function transactionListQueryOptions(filters: TransactionFilters) {
 export function useTransactionList(filters: TransactionFilters) {
   const deviseConnue = useCurrencyReady()
 
-  return useQuery({ ...transactionListQueryOptions(filters), enabled: deviseConnue })
+  return useQuery({
+    ...transactionListQueryOptions(filters),
+    enabled: deviseConnue,
+  })
 }
 
 export function useCategoryList() {
@@ -55,7 +60,8 @@ export function useCreateTransaction() {
   const invalidate = useInvalidateTransactions()
 
   return useMutation({
-    mutationFn: (input: TransactionInput) => createTransaction({ data: input }),
+    mutationFn: (input: TransactionInput) =>
+      waitForServerSession().then(() => createTransaction({ data: input })),
     onSuccess: invalidate,
   })
 }
@@ -65,7 +71,7 @@ export function useUpdateTransaction() {
 
   return useMutation({
     mutationFn: (input: TransactionInput & { id: string }) =>
-      updateTransaction({ data: input }),
+      waitForServerSession().then(() => updateTransaction({ data: input })),
     onSuccess: invalidate,
   })
 }
@@ -74,7 +80,8 @@ export function useDeleteTransaction() {
   const invalidate = useInvalidateTransactions()
 
   return useMutation({
-    mutationFn: (id: string) => deleteTransaction({ data: id }),
+    mutationFn: (id: string) =>
+      waitForServerSession().then(() => deleteTransaction({ data: id })),
     onSuccess: invalidate,
   })
 }

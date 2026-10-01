@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
+import { waitForServerSession } from '#/lib/auth/store'
+
 import {
   listCurrencies,
   updateCurrencyRate,
@@ -13,49 +15,53 @@ export function useCurrenciesQuery() {
     queryKey: currenciesQueryKey,
     queryFn: () => listCurrencies(),
     // Le serveur convertit les montants dans cette devise : la reponse doit
-    // toujours etre fraiche, sinon le client formate avec une devise
-    // perimee pendant que les requetes de donnees renvoient la nouvelle.
+    // toujours etre fraiche, sinon le client formate des montants convertis
+    // avec la devise precedente.
     staleTime: 0,
     refetchOnWindowFocus: true,
   })
 }
 
 /**
- * Les montants renvoyes par le serveur sont convertis dans la devise
- * d'affichage : changer de devise ou de taux doit donc invalider toutes les
- * requetes de donnees, pas seulement celle des devises.
- */
-/**
- * Le serveur convertit tous les montants dans la devise d'affichage : les
- * requetes de donnees ne doivent demarrer qu'une fois cette devise connue,
- * sinon le client formate des montants convertis avec l'ancienne devise.
+ * Les requetes de donnees ne doivent pas demarrer avant de connaitre la devise
+ * d'affichage, sinon le client formate des montants convertis avec
+ * l'ancienne devise.
  */
 export function useCurrencyReady(): boolean {
   return useCurrenciesQuery().isSuccess
 }
 
-export function useUpdateCurrencyRate() {
+/**
+ * Les montants renvoyes par le serveur dependent de la devise et des taux :
+ * les modifier doit donc invalider toutes les requetes, pas seulement celle
+ * des devises.
+ */
+function useInvalidateAll() {
   const queryClient = useQueryClient()
+
+  return () => {
+    queryClient.invalidateQueries({ queryKey: currenciesQueryKey })
+
+    return queryClient.invalidateQueries()
+  }
+}
+
+export function useUpdateCurrencyRate() {
+  const invalidateAll = useInvalidateAll()
 
   return useMutation({
     mutationFn: (input: { code: string; taux: number }) =>
-      updateCurrencyRate({ data: input }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: currenciesQueryKey })
-      return queryClient.invalidateQueries()
-    },
+      waitForServerSession().then(() => updateCurrencyRate({ data: input })),
+    onSuccess: invalidateAll,
   })
 }
 
 export function useUpdatePreferredCurrency() {
-  const queryClient = useQueryClient()
+  const invalidateAll = useInvalidateAll()
 
   return useMutation({
     mutationFn: (input: { devise: string }) =>
-      updatePreferredCurrency({ data: input }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: currenciesQueryKey })
-      return queryClient.invalidateQueries()
-    },
+      waitForServerSession().then(() => updatePreferredCurrency({ data: input })),
+    onSuccess: invalidateAll,
   })
 }

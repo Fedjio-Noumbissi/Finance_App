@@ -1,5 +1,7 @@
 import { queryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
+import { waitForServerSession } from '#/lib/auth/store'
+
 import type { CategoryFormValues, CategoryUpdateValues } from './schema'
 import {
   createCategory,
@@ -22,6 +24,7 @@ export function useCategories() {
   return useQuery(categoriesQueryOptions())
 }
 
+
 function useInvalidateCategories() {
   const queryClient = useQueryClient()
 
@@ -36,7 +39,8 @@ export function useCreateCategory() {
   const invalidate = useInvalidateCategories()
 
   return useMutation({
-    mutationFn: (input: CategoryFormValues) => createCategory({ data: input }),
+    mutationFn: (input: CategoryFormValues) =>
+      waitForServerSession().then(() => createCategory({ data: input })),
     onSuccess: invalidate,
   })
 }
@@ -45,7 +49,8 @@ export function useUpdateCategory() {
   const invalidate = useInvalidateCategories()
 
   return useMutation({
-    mutationFn: (input: CategoryUpdateValues) => updateCategory({ data: input }),
+    mutationFn: (input: CategoryUpdateValues) =>
+      waitForServerSession().then(() => updateCategory({ data: input })),
     onSuccess: invalidate,
   })
 }
@@ -54,7 +59,8 @@ export function useDeleteCategory() {
   const invalidate = useInvalidateCategories()
 
   return useMutation({
-    mutationFn: (id: string) => deleteCategory({ data: { id } }),
+    mutationFn: (id: string) =>
+      waitForServerSession().then(() => deleteCategory({ data: { id } })),
     onSuccess: invalidate,
   })
 }

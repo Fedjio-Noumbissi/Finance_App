@@ -46,6 +46,16 @@ export function extractErrorMessage(error: unknown, fallback: string): string {
 
 export const REQUEST_TIMEOUT_MS = 20_000
 
+/**
+ * La session serveur (cookie) n'est pas encore prete : la mutation est
+ * envoyee trop tot, juste apres la connexion par exemple.
+ */
+export class SessionNotReadyError extends Error {
+  constructor() {
+    super('session-not-ready')
+  }
+}
+
 export class RequestTimeoutError extends Error {
   constructor() {
     super('request-timeout')

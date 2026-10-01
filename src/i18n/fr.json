@@ -224,7 +224,8 @@
     "backToDashboard": "Retour au tableau de bord"
   },
   "errors": {
-    "timeout": "La connexion a expiré. Vérifiez votre réseau puis réessayez."
+    "timeout": "La connexion a expiré. Vérifiez votre réseau puis réessayez.",
+    "sessionNotReady": "Votre connexion n'est pas encore prête. Patientez quelques secondes puis réessayez."
   },
   "onboarding": {
     "welcomeTitle": "Bienvenue dans Finance App 👋",

@@ -7,6 +7,7 @@ import { useDeleteCategory, useUpdateCategory } from '#/lib/categories/queries'
 import type { CategoryItem } from '#/lib/categories/server'
 import {
   RequestTimeoutError,
+  SessionNotReadyError,
   extractErrorMessage,
   withTimeout,
 } from '#/lib/errors'
@@ -48,9 +49,11 @@ export function CategoryRow({ category }: CategoryRowProps) {
       setEditing(false)
     } catch (cause) {
       setError(
-        cause instanceof RequestTimeoutError
-          ? t('errors.timeout')
-          : extractErrorMessage(cause, t('settings.category.renameError')),
+        cause instanceof SessionNotReadyError
+          ? t('errors.sessionNotReady')
+          : cause instanceof RequestTimeoutError
+            ? t('errors.timeout')
+            : extractErrorMessage(cause, t('settings.category.renameError')),
       )
     } finally {
       setSaving(false)
@@ -67,9 +70,11 @@ export function CategoryRow({ category }: CategoryRowProps) {
     } catch (cause) {
       setConfirming(false)
       setError(
-        cause instanceof RequestTimeoutError
-          ? t('errors.timeout')
-          : extractErrorMessage(cause, t('settings.category.deleteError')),
+        cause instanceof SessionNotReadyError
+          ? t('errors.sessionNotReady')
+          : cause instanceof RequestTimeoutError
+            ? t('errors.timeout')
+            : extractErrorMessage(cause, t('settings.category.deleteError')),
       )
     } finally {
       setDeleting(false)

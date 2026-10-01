@@ -6,6 +6,7 @@ import { FormAlert, submitButtonClass } from '#/components/auth/AuthCard'
 import { useDevise } from '#/lib/currency/store'
 import {
   RequestTimeoutError,
+  SessionNotReadyError,
   extractErrorMessage,
   withTimeout,
 } from '#/lib/errors'
@@ -108,9 +109,11 @@ export function TransactionForm({
         onDone?.()
       } catch (error) {
         setSubmitError(
-          error instanceof RequestTimeoutError
-            ? t('errors.timeout')
-            : extractErrorMessage(error, t('transaction.form.error')),
+          error instanceof SessionNotReadyError
+            ? t('errors.sessionNotReady')
+            : error instanceof RequestTimeoutError
+              ? t('errors.timeout')
+              : extractErrorMessage(error, t('transaction.form.error')),
         )
       } finally {
         setSubmitting(false)
