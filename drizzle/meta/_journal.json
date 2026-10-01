@@ -1,0 +1,34 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1790842342384,
+      "tag": "0000_optimal_warbird",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790843631880,
+      "tag": "0001_abandoned_toad",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790859941583,
+      "tag": "0002_huge_sage",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1790860448946,
+      "tag": "0003_onboarding_backfill",
+      "breakpoints": true
+    }
+  ]
+}
