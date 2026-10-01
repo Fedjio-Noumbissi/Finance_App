@@ -1,5 +1,6 @@
+import { useDevise } from '#/lib/currency/store'
 import { useTranslation } from 'react-i18next'
-import { formatMonthName, formatMoney } from '#/lib/format'
+import { formatMonthName } from '#/lib/format'
 import type { MonthTotals } from '#/lib/stats/server'
 
 interface SummaryCardsProps {
@@ -41,25 +42,26 @@ export function SummaryCards({
   isLoading,
 }: SummaryCardsProps) {
   const { t } = useTranslation()
+  const { formatMontant } = useDevise()
 
   const cards: CardData[] = [
     {
       label: t('dashboard.balance'),
-      value: totals ? formatMoney(totals.solde) : '—',
+      value: totals ? formatMontant(totals.solde) : '—',
       hint: t('dashboard.balanceHint'),
       tone: totals && totals.solde < 0 ? 'expense' : 'default',
       variation: variationPct(totals?.solde, previousTotals?.solde),
     },
     {
       label: t('dashboard.income'),
-      value: totals ? formatMoney(totals.revenus) : '—',
+      value: totals ? formatMontant(totals.revenus) : '—',
       hint: formatMonthName(mois),
       tone: 'income',
       variation: variationPct(totals?.revenus, previousTotals?.revenus),
     },
     {
       label: t('dashboard.expense'),
-      value: totals ? formatMoney(totals.depenses) : '—',
+      value: totals ? formatMontant(totals.depenses) : '—',
       hint: formatMonthName(mois),
       tone: 'expense',
       variation: variationPct(totals?.depenses, previousTotals?.depenses),

@@ -157,7 +157,12 @@
     "dateInvalid": "Invalid date.",
     "noteTooLong": "The note cannot exceed 280 characters.",
     "idInvalid": "Invalid identifier.",
-    "invalidId": "Invalid identifier"
+    "invalidId": "Invalid identifier",
+    "deviseRequired": "Choose a currency.",
+    "currencyInvalid": "Invalid currency code.",
+    "rateRequired": "Enter a rate.",
+    "ratePositive": "The rate must be greater than 0.",
+    "rateTooHigh": "This rate is too high."
   },
   "category": {
     "fallback": "Uncategorised"
@@ -281,5 +286,31 @@
     "ctaBody": "Create your account in under two minutes, free and with no commitment.",
     "ctaButton": "Get started for free",
     "footerNote": "Personal finance management application."
+  },
+  "settings.currency": {
+    "title": "Currency",
+    "description": "Choose your display currency and adjust the conversion rates.",
+    "display": "Display currency",
+    "displayHint": "Every amount on the dashboard, in transactions and statistics is converted and shown in this currency.",
+    "active": "Active",
+    "search": "Search a currency",
+    "searchPlaceholder": "Code or name (euro, USD, yen…)",
+    "ratesHint": "1 unit of the currency equals the value shown in CFA francs (XOF). Update a rate after any significant move.",
+    "rateFor": "{devise} rate",
+    "perUnit": "XOF for 1 {devise}",
+    "save": "Save",
+    "saveError": "Could not save the rate.",
+    "loadError": "Could not load the currencies.",
+    "noResult": "No currency matches your search.",
+    "noDecimals": "This currency does not use cents.",
+    "preview": "Example: 100 {devise} is about {resultat} {deviseCible}.",
+    "updatedAt": "Rate updated on {date}."
+  },
+  "transaction.form": {
+    "devise": "Currency",
+    "deviseHint": "Entered in {devise} — 100 {devise} ≈ {exemple}"
+  },
+  "transaction.table": {
+    "originalAmount": "Amount entered in the original currency"
   }
 }

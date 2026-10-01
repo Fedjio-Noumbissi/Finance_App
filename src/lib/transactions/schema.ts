@@ -6,6 +6,7 @@ export const transactionTypeValues: TransactionType[] = ['revenu', 'depense']
 
 export interface TransactionFormValues {
   montant: string
+  devise: string
   type: TransactionType
   categorieId: string
   date: string
@@ -34,8 +35,13 @@ const montantSchema = z.preprocess(
     .max(99_999_999, 'validation.montantTooHigh'),
 )
 
+export const deviseSchema = z
+  .string()
+  .regex(/^[A-Z]{3}$/, 'validation.deviseRequired')
+
 export const transactionSchema = z.object({
   montant: montantSchema,
+  devise: deviseSchema.default('XOF'),
   type: z.enum(['revenu', 'depense'], { error: 'validation.typeInvalid' }),
   categorieId: z.uuid('validation.categorieRequired'),
   date: z.iso.date('validation.dateInvalid'),

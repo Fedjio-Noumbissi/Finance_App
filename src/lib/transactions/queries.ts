@@ -5,6 +5,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 
+import { useCurrencyReady } from '#/lib/currency/queries'
 import { statsKeys } from '#/lib/stats/keys'
 
 import { categoriesQueryOptions } from '#/lib/categories/queries'
@@ -31,7 +32,9 @@ export function transactionListQueryOptions(filters: TransactionFilters) {
 }
 
 export function useTransactionList(filters: TransactionFilters) {
-  return useQuery(transactionListQueryOptions(filters))
+  const deviseConnue = useCurrencyReady()
+
+  return useQuery({ ...transactionListQueryOptions(filters), enabled: deviseConnue })
 }
 
 export function useCategoryList() {

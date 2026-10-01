@@ -1,6 +1,11 @@
 import { getLocale, i18n } from '#/i18n'
+import {
+  DEVISE_BASE,
+  getCurrencyDefinition,
+  roundCurrency,
+} from '#/lib/currency/catalogue'
 
-export const CURRENCY_CODE = 'XOF'
+export const CURRENCY_CODE = DEVISE_BASE
 
 export const todayIso = (): string => new Date().toISOString().slice(0, 10)
 
@@ -10,30 +15,46 @@ function currentLocale(): string {
 
 export function formatMoney(
   amount: string | number,
+  devise: string = CURRENCY_CODE,
   locale = currentLocale(),
 ): string {
   const value = typeof amount === 'string' ? Number(amount) : amount
+  const { decimales } = getCurrencyDefinition(devise)
 
   return new Intl.NumberFormat(locale, {
     style: 'currency',
-    currency: CURRENCY_CODE,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    currency: devise,
+    currencyDisplay: 'narrowSymbol',
+    minimumFractionDigits: decimales,
+    maximumFractionDigits: decimales,
   }).format(value)
 }
 
 export function formatCompactMoney(
   amount: string | number,
+  devise: string = CURRENCY_CODE,
   locale = currentLocale(),
 ): string {
   const value = typeof amount === 'string' ? Number(amount) : amount
+  const { decimales } = getCurrencyDefinition(devise)
 
   return new Intl.NumberFormat(locale, {
     style: 'currency',
-    currency: CURRENCY_CODE,
+    currency: devise,
+    currencyDisplay: 'narrowSymbol',
     notation: 'compact',
-    maximumFractionDigits: 1,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: Math.max(1, Math.min(decimales, 1)),
   }).format(value)
+}
+
+/** Formate un montant déjà arrondi à la devise d'affichage. */
+export function formatConverted(
+  amount: number,
+  devise: string,
+  locale = currentLocale(),
+): string {
+  return formatMoney(roundCurrency(amount, devise), devise, locale)
 }
 
 export function formatDate(iso: string, locale = currentLocale()): string {

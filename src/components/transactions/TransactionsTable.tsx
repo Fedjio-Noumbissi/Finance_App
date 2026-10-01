@@ -8,8 +8,9 @@ import {
 } from '@tanstack/react-table'
 import { Fragment, useMemo, useState } from 'react'
 
+import { useDevise } from '#/lib/currency/store'
 import { useTranslation } from 'react-i18next'
-import { formatDate, formatMoney } from '#/lib/format'
+import { formatDate } from '#/lib/format'
 import { EmptyState } from '#/components/ui/EmptyState'
 import { useCategoryName } from '#/lib/i18n/useCategoryName'
 import { useDeleteTransaction } from '#/lib/transactions/queries'
@@ -48,6 +49,7 @@ export function TransactionsTable({
   onFocusForm,
 }: TransactionsTableProps) {
   const { t } = useTranslation()
+  const { formatMontant, formatMontantAvecCode } = useDevise()
   const categoryName = useCategoryName()
   const [editingId, setEditingId] = useState<string | null>(null)
 
@@ -82,18 +84,29 @@ export function TransactionsTable({
           header: () => t('transaction.table.montant'),
           cell: (info) => {
             const value = info.getValue()
-            const isIncome = info.row.original.type === 'revenu'
+            const { type, deviseSaisie, montantSaisi } = info.row.original
+            const isIncome = type === 'revenu'
 
             return (
-              <span
-                className={
-                  isIncome
-                    ? 'font-medium tabular-nums text-emerald-600'
-                    : 'font-medium tabular-nums text-slate-900'
-                }
-              >
-                {isIncome ? '+' : '−'}
-                {formatMoney(value)}
+              <span className="flex flex-col items-end">
+                <span
+                  className={
+                    isIncome
+                      ? 'font-medium tabular-nums text-emerald-600'
+                      : 'font-medium tabular-nums text-slate-900'
+                  }
+                >
+                  {isIncome ? '+' : '−'}
+                  {formatMontant(value)}
+                </span>
+                {deviseSaisie && montantSaisi ? (
+                  <span
+                    title={t('transaction.table.originalAmount')}
+                    className="text-[11px] tabular-nums text-slate-400"
+                  >
+                    {formatMontantAvecCode(montantSaisi, deviseSaisie)}
+                  </span>
+                ) : null}
               </span>
             )
           },
@@ -122,7 +135,9 @@ export function TransactionsTable({
           ),
         }),
       ]),
-    [],
+    // Les cellules referencent le formatage : sans ces dependances, les
+    // colonnes garderaient la devise d'affichage capturee au premier rendu.
+    [categoryName, formatMontant, formatMontantAvecCode, t],
   )
 
   const table = useTable({

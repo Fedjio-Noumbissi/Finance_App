@@ -2,9 +2,11 @@ import { createServerFn } from '@tanstack/react-start'
 import { and, desc, eq, gte, lte, sql } from 'drizzle-orm'
 import { z } from 'zod'
 
-import { requireUserId } from '#/lib/auth/session'
 import { db } from '#/lib/db'
 import { categories, transactions } from '#/lib/db/schema'
+import { convertMontant, roundCurrency } from '#/lib/currency/catalogue'
+import { requireUserCurrency } from '#/lib/currency/guards'
+import type { TauxMap } from '#/lib/currency/catalogue'
 import {
   currentMonthKey,
   isMonthKey,
@@ -50,6 +52,8 @@ export interface RecentTransaction {
 export interface DashboardData {
   mois: string
   moisPrecedent: string
+  devise: string
+  deviseParDefaut: string
   resume: MonthTotals
   moisPrecedentResume: MonthTotals
   totalTransactions: number
@@ -62,6 +66,30 @@ export interface BalancePoint {
   revenus: number
   depenses: number
   solde: number
+}
+
+export interface BalanceEvolution {
+  devise: string
+  deviseParDefaut: string
+  points: BalancePoint[]
+}
+
+/**
+ * Convertit des sous-totaux agroupes par devise dans la devise d'affichage.
+ * Les sommes restent calculées en base (par type et par devise) puis
+ * converties ici, ce qui évite de前年lier chaque requête à la table des taux.
+ */
+function convertirSomme(
+  lignes: { devise: string; total: number }[],
+  deviseCible: string,
+  taux: TauxMap,
+): number {
+  const total = lignes.reduce(
+    (sum, ligne) => sum + convertMontant(ligne.total, ligne.devise, deviseCible, taux),
+    0,
+  )
+
+  return roundCurrency(total, deviseCible)
 }
 
 interface Bounds {
@@ -177,9 +205,18 @@ function monthKeysEndingAt(month: string, count: number): string[] {
   )
 }
 
-async function fetchTotals(userId: string, bounds: Bounds): Promise<MonthTotals> {
+async function fetchTotals(
+  userId: string,
+  bounds: Bounds,
+  deviseCible: string,
+  taux: TauxMap,
+): Promise<MonthTotals> {
   const rows = await db
-    .select({ type: transactions.type, total: sumMontant })
+    .select({
+      type: transactions.type,
+      devise: transactions.devise,
+      total: sumMontant,
+    })
     .from(transactions)
     .where(
       and(
@@ -188,15 +225,23 @@ async function fetchTotals(userId: string, bounds: Bounds): Promise<MonthTotals>
         lte(transactions.date, bounds.au),
       ),
     )
-    .groupBy(transactions.type)
+    .groupBy(transactions.type, transactions.devise)
 
-  const revenus = rows.find((row) => row.type === 'revenu')?.total ?? 0
-  const depenses = rows.find((row) => row.type === 'depense')?.total ?? 0
+  const revenus = convertirSomme(
+    rows.filter((row) => row.type === 'revenu'),
+    deviseCible,
+    taux,
+  )
+  const depenses = convertirSomme(
+    rows.filter((row) => row.type === 'depense'),
+    deviseCible,
+    taux,
+  )
 
   return {
-    revenus: round2(revenus),
-    depenses: round2(depenses),
-    solde: round2(revenus - depenses),
+    revenus,
+    depenses,
+    solde: roundCurrency(revenus - depenses, deviseCible),
   }
 }
 
@@ -210,13 +255,13 @@ const monthParamSchema = z.object({
 export const getDashboardData = createServerFn({ method: 'GET' })
   .validator((input: unknown) => monthParamSchema.parse(input ?? {}))
   .handler(async ({ data }): Promise<DashboardData> => {
-    const userId = await requireUserId()
+    const { userId, devise, taux } = await requireUserCurrency()
     const mois = isMonthKey(data.mois) ? data.mois : currentMonthKey()
     const bounds = monthBounds(mois)
     const previousBounds = previousMonthBoundsFor(mois)
 
     const [previousResume, totalTransactions] = await Promise.all([
-      fetchTotals(userId, previousBounds),
+      fetchTotals(userId, previousBounds, devise, taux),
 
       db
         .select({ total: sql<number>`count(*)::int`.mapWith(Number) })
@@ -225,7 +270,7 @@ export const getDashboardData = createServerFn({ method: 'GET' })
     ])
 
     const [resume, byCategory, lastTransactions] = await Promise.all([
-      fetchTotals(userId, bounds),
+      fetchTotals(userId, bounds, devise, taux),
 
       db
         .select({
@@ -233,6 +278,7 @@ export const getDashboardData = createServerFn({ method: 'GET' })
           nomFr: categories.nomFr,
           nomEn: categories.nomEn,
           couleur: categories.couleur,
+          devise: transactions.devise,
           total: sumMontant,
           nombre: sql<number>`count(*)::int`.mapWith(Number),
         })
@@ -251,13 +297,14 @@ export const getDashboardData = createServerFn({ method: 'GET' })
           categories.nomFr,
           categories.nomEn,
           categories.couleur,
-        )
-        .orderBy(desc(sumMontant)),
+          transactions.devise,
+        ),
 
       db
         .select({
           id: transactions.id,
           montant: transactions.montant,
+          devise: transactions.devise,
           type: transactions.type,
           date: transactions.date,
           note: transactions.note,
@@ -272,29 +319,59 @@ export const getDashboardData = createServerFn({ method: 'GET' })
         .orderBy(desc(transactions.date), desc(transactions.dateCreation))
         .limit(5),
     ])
-    const totalDepenses = byCategory.reduce((sum, row) => sum + row.total, 0)
+    // Le groupement SQL inclut la devise (les montants sont convertis en JS) :
+    // une categorie dont les depenses sont saisies dans plusieurs devises
+    // revient donc en plusieurs lignes qu'il faut fusionner.
+    const parCategorie = new Map<string, CategoryExpense>()
 
-    return {
-      mois,
-      moisPrecedent: shiftMonthKey(mois, -1),
-      resume,
-      moisPrecedentResume: previousResume,
-      totalTransactions: totalTransactions[0]?.total ?? 0,
-      depensesParCategorie: byCategory.map((row) => ({
+    for (const row of byCategory) {
+      const total = convertMontant(row.total, row.devise, devise, taux)
+      const existante = parCategorie.get(row.categorieId)
+
+      if (existante) {
+        existante.total += total
+        existante.nombre += row.nombre
+        continue
+      }
+
+      parCategorie.set(row.categorieId, {
         categorieId: row.categorieId,
         nomFr: row.nomFr,
         nomEn: row.nomEn,
         couleur: row.couleur ?? '#94a3b8',
-        total: round2(row.total),
-        part:
-          totalDepenses > 0
-            ? round2((row.total / totalDepenses) * 100)
-            : 0,
+        total,
+        part: 0,
         nombre: row.nombre,
-      })),
+      })
+    }
+
+    const totalDepenses = [...parCategorie.values()].reduce(
+      (sum, row) => sum + row.total,
+      0,
+    )
+
+    return {
+      mois,
+      moisPrecedent: shiftMonthKey(mois, -1),
+      devise,
+      deviseParDefaut: 'XOF',
+      resume,
+      moisPrecedentResume: previousResume,
+      totalTransactions: totalTransactions[0]?.total ?? 0,
+      depensesParCategorie: [...parCategorie.values()]
+        .sort((a, b) => b.total - a.total)
+        .map((row) => ({
+          ...row,
+          part: totalDepenses > 0 ? round2((row.total / totalDepenses) * 100) : 0,
+        })),
       dernieresTransactions: lastTransactions.map((row) => ({
         id: row.id,
-        montant: row.montant,
+        montant: convertMontant(
+          Number(row.montant),
+          row.devise,
+          devise,
+          taux,
+        ).toFixed(2),
         type: row.type,
         date: row.date.toISOString(),
         note: row.note,
@@ -311,8 +388,8 @@ export const getDashboardData = createServerFn({ method: 'GET' })
 
 export const getBalanceEvolution = createServerFn({ method: 'GET' })
   .validator((input: unknown) => monthParamSchema.parse(input ?? {}))
-  .handler(async ({ data }): Promise<{ points: BalancePoint[] }> => {
-    const userId = await requireUserId()
+  .handler(async ({ data }): Promise<BalanceEvolution> => {
+    const { userId, devise, taux } = await requireUserCurrency()
     const months = 6
     const selected = isMonthKey(data.mois) ? data.mois : currentMonthKey()
     const bounds = monthBounds(selected)
@@ -327,12 +404,14 @@ export const getBalanceEvolution = createServerFn({ method: 'GET' })
     const rows = await db.execute<{
       mois: string
       type: 'revenu' | 'depense'
+      devise: string
       total: number
     }>(sql`
       with monthly_transactions as (
         select
           to_char(${transactions.date} at time zone 'Europe/Paris', 'YYYY-MM') as mois,
           ${transactions.type} as type,
+          ${transactions.devise} as devise,
           ${transactions.montant}::float8 as montant
         from ${transactions}
         where
@@ -345,25 +424,31 @@ export const getBalanceEvolution = createServerFn({ method: 'GET' })
         type,
         coalesce(sum(montant), 0::float8) as total
       from monthly_transactions
-      group by mois, type
+      group by mois, type, devise
     `)
 
     const points = keys.map((mois) => {
       const forMonth = rows.filter((row) => row.mois === mois)
-      const revenus =
-        forMonth.find((row) => row.type === 'revenu')?.total ?? 0
-      const depenses =
-        forMonth.find((row) => row.type === 'depense')?.total ?? 0
+      const revenus = convertirSomme(
+        forMonth.filter((row) => row.type === 'revenu'),
+        devise,
+        taux,
+      )
+      const depenses = convertirSomme(
+        forMonth.filter((row) => row.type === 'depense'),
+        devise,
+        taux,
+      )
 
       return {
         mois,
-        revenus: round2(revenus),
-        depenses: round2(depenses),
-        solde: round2(revenus - depenses),
+        revenus,
+        depenses,
+        solde: roundCurrency(revenus - depenses, devise),
       }
     })
 
-    return { points }
+    return { devise, deviseParDefaut: 'XOF', points }
   },
 )
 

@@ -3,6 +3,7 @@ import { useId, useRef, useState } from 'react'
 
 import { useTranslation } from 'react-i18next'
 import { FormAlert, submitButtonClass } from '#/components/auth/AuthCard'
+import { useDevise } from '#/lib/currency/store'
 import {
   RequestTimeoutError,
   extractErrorMessage,
@@ -31,8 +32,9 @@ interface TransactionFormProps {
   onDone?: () => void
 }
 
-const emptyValues = (): TransactionInput => ({
+const emptyValues = (devise = 'XOF'): TransactionInput => ({
   montant: '',
+  devise,
   type: 'depense',
   categorieId: '',
   date: todayIso(),
@@ -43,6 +45,7 @@ const fromTransaction = (
   transaction: TransactionWithCategory,
 ): TransactionInput => ({
   montant: Number(transaction.montant).toFixed(2),
+  devise: transaction.deviseSaisie ?? transaction.devise,
   type: transaction.type,
   categorieId: transaction.categorie.id,
   date: transaction.date.slice(0, 10),
@@ -57,6 +60,7 @@ export function TransactionForm({
 : TransactionFormProps) {
   const { t } = useTranslation()
   const categoryName = useCategoryName()
+  const { devise, currencies, formatMontantAvecCode } = useDevise()
   const isEdit = Boolean(transaction)
 
   const create = useCreateTransaction()
@@ -67,11 +71,12 @@ export function TransactionForm({
   const [attempted, setAttempted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const selectId = useId()
+  const deviseId = useId()
 
   const form = useForm({
     defaultValues: transaction
       ? fromTransaction(transaction)
-      : emptyValues(),
+      : emptyValues(devise),
     onSubmit: async ({ value }) => {
       setSubmitError(null)
       setSubmitting(true)
@@ -92,7 +97,7 @@ export function TransactionForm({
 
         if (!transaction) {
           form.reset({
-            ...emptyValues(),
+            ...emptyValues(value.devise),
             type: value.type,
             categorieId: value.categorieId,
             date: value.date,
@@ -123,7 +128,7 @@ export function TransactionForm({
         void form.handleSubmit()
       }}
     >
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <form.Field
           name="montant"
           validators={{
@@ -157,9 +162,51 @@ export function TransactionForm({
           )}
         </form.Field>
 
-        <form.Field name="type">
+        <form.Field
+          name="devise"
+          validators={{
+            onChange: ({ value }) =>
+              validateTransactionField('devise', { devise: value }),
+          }}
+        >
           {(field) => (
             <div className="flex flex-col gap-1.5">
+              <label
+                className="text-sm font-medium text-slate-700"
+                htmlFor={deviseId}
+              >
+                {t('transaction.form.devise')}
+              </label>
+              <select
+                id={deviseId}
+                name="devise"
+                className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-lg text-slate-900 outline-none transition focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10"
+                value={field.state.value}
+                onChange={(event) => field.handleChange(event.target.value)}
+                onBlur={field.handleBlur}
+              >
+                {currencies.map((currency) => (
+                  <option key={currency.code} value={currency.code}>
+                    {currency.code} — {categoryName({ nomFr: currency.nomFr, nomEn: currency.nomEn })}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-slate-500">
+                {t('transaction.form.deviseHint', {
+                  devise: field.state.value,
+                  exemple: formatMontantAvecCode(100, field.state.value),
+                })}
+              </p>
+              {field.state.meta.errors.length > 0 ? (
+                <FieldError messageKey={String(field.state.meta.errors[0])} />
+              ) : null}
+            </div>
+          )}
+        </form.Field>
+
+        <form.Field name="type">
+          {(field) => (
+            <div className="flex flex-col gap-1.5 lg:col-span-1">
               <span className="text-sm font-medium text-slate-700">
                 {t('transaction.form.type')}
               </span>

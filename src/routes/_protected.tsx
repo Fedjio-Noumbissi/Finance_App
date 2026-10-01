@@ -2,6 +2,7 @@ import { Outlet, createFileRoute } from '@tanstack/react-router'
 
 import { AppSidebar } from '#/components/layout/AppSidebar'
 import { SiteHeader } from '#/components/layout/SiteHeader'
+import { DeviseProvider } from '#/lib/currency/store'
 import { OnboardingFlow } from '#/components/onboarding/OnboardingFlow'
 import { QuickAddFab } from '#/components/transactions/QuickAddFab'
 import { requireAuth } from '#/lib/auth/guard'
@@ -20,7 +21,9 @@ function ProtectedLayout() {
       <AppSidebar />
       <div className="lg:pl-60">
         <SiteHeader className="lg:hidden" />
-        <Outlet />
+        <DeviseProvider>
+          <Outlet />
+        </DeviseProvider>
       </div>
       <QuickAddFab />
       <OnboardingFlow />

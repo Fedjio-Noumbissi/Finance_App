@@ -157,7 +157,12 @@
     "dateInvalid": "Date invalide.",
     "noteTooLong": "La note ne peut pas dépasser 280 caractères.",
     "idInvalid": "Identifiant invalide.",
-    "invalidId": "Identifiant invalide"
+    "invalidId": "Identifiant invalide",
+    "deviseRequired": "Choisissez une devise.",
+    "currencyInvalid": "Code de devise invalide.",
+    "rateRequired": "Saisissez un taux.",
+    "ratePositive": "Le taux doit être supérieur à 0.",
+    "rateTooHigh": "Ce taux est trop élevé."
   },
   "category": {
     "fallback": "Sans catégorie"
@@ -281,5 +286,31 @@
     "ctaBody": "Créez votre compte en moins de deux minutes, c’est gratuit et sans engagement.",
     "ctaButton": "Commencer gratuitement",
     "footerNote": "Application personnelle de gestion de finances."
+  },
+  "settings.currency": {
+    "title": "Devise",
+    "description": "Choisissez la devise d'affichage et ajustez les taux de conversion.",
+    "display": "Devise d'affichage",
+    "displayHint": "Tous les montants du tableau de bord, des transactions et des statistiques sont convertis et affichés dans cette devise.",
+    "active": "Active",
+    "search": "Rechercher une devise",
+    "searchPlaceholder": "Code ou nom (euro, USD, yen…)",
+    "ratesHint": "1 unité de la devise = valeur affichée en francs CFA (XOF). Mettez à jour un taux après chaque fluctuation importante.",
+    "rateFor": "Taux de {devise}",
+    "perUnit": "FCFA pour 1 {devise}",
+    "save": "Enregistrer",
+    "saveError": "Impossible d'enregistrer le taux.",
+    "loadError": "Impossible de charger les devises.",
+    "noResult": "Aucune devise ne correspond.",
+    "noDecimals": "Cette devise n'utilise pas les centimes.",
+    "preview": "Exemple : 100 {devise} valent environ {resultat} {deviseCible}.",
+    "updatedAt": "Taux mis à jour le {date}."
+  },
+  "transaction.form": {
+    "devise": "Devise",
+    "deviseHint": "Saisie en {devise} — 100 {devise} ≈ {exemple}"
+  },
+  "transaction.table": {
+    "originalAmount": "Montant saisi dans la devise d'origine"
   }
 }

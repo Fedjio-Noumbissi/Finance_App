@@ -2,6 +2,8 @@ import { createServerFn } from '@tanstack/react-start'
 import { and, desc, eq, gte, isNull, lte, or } from 'drizzle-orm'
 
 import { requireUserId } from '#/lib/auth/session'
+import { convertMontant } from '#/lib/currency/catalogue'
+import { requireUserCurrency } from '#/lib/currency/guards'
 import { i18n } from '#/i18n'
 import { db } from '#/lib/db'
 import { categories, transactions } from '#/lib/db/schema'
@@ -15,7 +17,13 @@ import {
 
 export interface TransactionWithCategory {
   id: string
+  /** Montant converti dans la devise d'affichage. */
   montant: string
+  devise: string
+  deviseParDefaut: string
+  /** Montant et devise d'origine, quand ils diffèrent de la devise d'affichage. */
+  montantSaisi: string | null
+  deviseSaisie: string | null
   type: 'revenu' | 'depense'
   date: string
   note: string | null
@@ -52,7 +60,7 @@ async function assertCategoryOwnership(
 export const listTransactions = createServerFn({ method: 'POST' })
   .validator((input: unknown) => transactionFiltersSchema.parse(input))
   .handler(async ({ data }): Promise<TransactionWithCategory[]> => {
-    const userId = await requireUserId()
+    const { userId, devise, taux } = await requireUserCurrency()
 
     const conditions = [eq(transactions.userId, userId)]
 
@@ -72,6 +80,7 @@ export const listTransactions = createServerFn({ method: 'POST' })
       .select({
         id: transactions.id,
         montant: transactions.montant,
+        devise: transactions.devise,
         type: transactions.type,
         date: transactions.date,
         note: transactions.note,
@@ -87,9 +96,22 @@ export const listTransactions = createServerFn({ method: 'POST' })
       .where(and(...conditions))
       .orderBy(desc(transactions.date), desc(transactions.dateCreation))
 
-    return rows.map((row) => ({
+    return rows.map((row) => {
+      const converti = convertMontant(
+        Number(row.montant),
+        row.devise,
+        devise,
+        taux,
+      )
+      const deviseDifferente = row.devise !== devise
+
+      return {
       id: row.id,
-      montant: row.montant,
+      montant: converti.toFixed(2),
+      devise,
+      deviseParDefaut: 'XOF',
+      montantSaisi: deviseDifferente ? row.montant : null,
+      deviseSaisie: deviseDifferente ? row.devise : null,
       type: row.type,
       date: row.date.toISOString(),
       note: row.note,
@@ -101,7 +123,8 @@ export const listTransactions = createServerFn({ method: 'POST' })
         icone: row.categorieIcone,
         couleur: row.categorieCouleur,
       },
-    }))
+      }
+    })
   })
 
 export const createTransaction = createServerFn({ method: 'POST' })
@@ -116,6 +139,7 @@ export const createTransaction = createServerFn({ method: 'POST' })
       .values({
         userId,
         montant: data.montant.toFixed(2),
+        devise: data.devise,
         type: data.type,
         categoryId: data.categorieId,
         date: new Date(`${data.date}T12:00:00`),
@@ -152,6 +176,7 @@ export const updateTransaction = createServerFn({ method: 'POST' })
       .update(transactions)
       .set({
         montant: data.montant.toFixed(2),
+        devise: data.devise,
         type: data.type,
         categoryId: data.categorieId,
         date: new Date(`${data.date}T12:00:00`),

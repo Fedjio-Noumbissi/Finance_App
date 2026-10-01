@@ -1,8 +1,9 @@
 import { useMemo } from 'react'
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 
+import { useDevise } from '#/lib/currency/store'
 import { useTranslation } from 'react-i18next'
-import { formatMoney } from '#/lib/format'
+
 import { EmptyState } from '#/components/ui/EmptyState'
 import { useCategoryName } from '#/lib/i18n/useCategoryName'
 import type { CategoryExpense } from '#/lib/stats/server'
@@ -13,6 +14,8 @@ interface ExpensesPieChartProps {
 }
 
 interface PieEntry {
+  /** Deux categories peuvent porter le meme nom : la cle doit rester unique. */
+  id: string
   name: string
   value: number
   part: number
@@ -22,10 +25,12 @@ interface PieEntry {
 export function ExpensesPieChart({ data, isLoading }
 : ExpensesPieChartProps) {
   const { t } = useTranslation()
+  const { formatMontant } = useDevise()
   const categoryName = useCategoryName()
   const entries = useMemo<PieEntry[]>(
     () =>
       (data ?? []).map((item) => ({
+        id: item.categorieId,
         name: categoryName(item),
         value: item.total,
         part: item.part,
@@ -47,7 +52,7 @@ export function ExpensesPieChart({ data, isLoading }
         </h2>
         {total > 0 ? (
           <span className="text-sm font-medium tabular-nums text-slate-700">
-            {formatMoney(total)}
+            {formatMontant(total)}
           </span>
         ) : null}
       </header>
@@ -78,7 +83,7 @@ export function ExpensesPieChart({ data, isLoading }
                   stroke="none"
                 >
                   {entries.map((entry) => (
-                    <Cell key={entry.name} fill={entry.fill} />
+                    <Cell key={entry.id} fill={entry.fill} />
                   ))}
                 </Pie>
                 <Tooltip
@@ -93,7 +98,7 @@ export function ExpensesPieChart({ data, isLoading }
                       <div className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs shadow-sm">
                         <p className="font-medium text-slate-900">{point.name}</p>
                         <p className="text-slate-600">
-                          {formatMoney(point.value)} ·{' '}
+                          {formatMontant(point.value)} ·{' '}
                           {point.part.toFixed(1).replace('.', ',')} %
                         </p>
                       </div>
@@ -115,7 +120,7 @@ export function ExpensesPieChart({ data, isLoading }
 
           <ul className="mt-4 space-y-1.5 border-t border-slate-100 pt-4 text-sm">
             {entries.map((entry) => (
-              <li key={entry.name} className="flex items-center gap-2">
+              <li key={entry.id} className="flex items-center gap-2">
                 <span
                   aria-hidden
                   className="inline-block size-2.5 shrink-0 rounded-full"
@@ -125,7 +130,7 @@ export function ExpensesPieChart({ data, isLoading }
                   {entry.name}
                 </span>
                 <span className="tabular-nums text-slate-500">
-                  {formatMoney(entry.value)}
+                  {formatMontant(entry.value)}
                 </span>
                 <span className="w-14 text-right tabular-nums text-slate-400">
                   {entry.part.toFixed(0)} %

@@ -11,11 +11,8 @@ import {
 } from 'recharts'
 
 import { useTranslation } from 'react-i18next'
-import {
-  formatCompactMoney,
-  formatMoney,
-  formatShortMonth,
-} from '#/lib/format'
+import { useDevise } from '#/lib/currency/store'
+import { formatShortMonth } from '#/lib/format'
 import type { BalancePoint } from '#/lib/stats/server'
 
 interface BalanceLineChartProps {
@@ -33,6 +30,7 @@ interface ChartPoint {
 
 export function BalanceLineChart({ points, isLoading }
 : BalanceLineChartProps) {
+  const { formatMontant, formatCompact } = useDevise()
   const { t, i18n } = useTranslation()
   const data = useMemo<ChartPoint[]>(
     () =>
@@ -81,11 +79,11 @@ export function BalanceLineChart({ points, isLoading }
                 tickLine={false}
                 axisLine={false}
                 width={72}
-                tickFormatter={(value: number) => formatCompactMoney(value)}
+                tickFormatter={(value: number) => formatCompact(value)}
               />
               <Tooltip
                 formatter={(value, name) => [
-                  formatMoney(typeof value === 'number' ? value : Number(value)),
+                  formatMontant(typeof value === 'number' ? value : Number(value)),
                   String(name),
                 ]}
                 contentStyle={{

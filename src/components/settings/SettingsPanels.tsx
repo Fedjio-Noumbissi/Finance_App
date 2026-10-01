@@ -5,6 +5,7 @@ import { useLanguageState } from '#/lib/i18n/useLanguage'
 import { extractErrorMessage } from '#/lib/errors'
 
 import { CategoryCreateForm } from './CategoryCreateForm'
+import { CurrencyPanel } from './CurrencyPanel'
 import { CategoryRow } from './CategoryRow'
 
 function Section({
@@ -57,6 +58,13 @@ export function SettingsPanels() {
             </dd>
           </div>
         </dl>
+      </Section>
+
+      <Section
+        title={t('settings.currency.title')}
+        description={t('settings.currency.description')}
+      >
+        <CurrencyPanel />
       </Section>
 
       <Section

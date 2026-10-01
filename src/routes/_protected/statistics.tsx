@@ -1,11 +1,12 @@
 import { createFileRoute, useNavigate, useSearch } from '@tanstack/react-router'
 
 import { useTranslation } from 'react-i18next'
+import { useDevise } from '#/lib/currency/store'
 import { MonthPicker } from '#/components/dashboard/MonthPicker'
 import { BalanceLineChart } from '#/components/stats/BalanceLineChart'
 import { ErrorPanel } from '#/components/ui/ErrorPanel'
 import { currentMonthKey, isMonthKey } from '#/lib/dates/months'
-import { formatMoney } from '#/lib/format'
+
 import { useBalanceEvolution } from '#/lib/stats/queries'
 
 export const Route = createFileRoute('/_protected/statistics')({
@@ -19,6 +20,7 @@ export const Route = createFileRoute('/_protected/statistics')({
 
 function StatisticsPage() {
   const { t } = useTranslation()
+  const { formatMontant } = useDevise()
   const search = useSearch({ from: '/_protected/statistics' })
   const navigate = useNavigate()
   const mois = search.mois ?? currentMonthKey()
@@ -63,7 +65,7 @@ function StatisticsPage() {
           <p
             className={`mt-2 text-2xl font-bold tabular-nums ${last && last.solde < 0 ? 'text-rose-600' : 'text-slate-900'}`}
           >
-            {evolution.isPending || !last ? '…' : formatMoney(last.solde)}
+            {evolution.isPending || !last ? '…' : formatMontant(last.solde)}
           </p>
           <p className="mt-1 text-xs text-slate-400">
             {t('stats.lastSixMonths')}
@@ -75,7 +77,7 @@ function StatisticsPage() {
           <p
             className={`mt-2 text-2xl font-bold tabular-nums ${cumulSolde < 0 ? 'text-rose-600' : 'text-emerald-600'}`}
           >
-            {evolution.isPending ? '…' : formatMoney(cumulSolde)}
+            {evolution.isPending ? '…' : formatMontant(cumulSolde)}
           </p>
           <p className="mt-1 text-xs text-slate-400">
             {t('stats.cumulativeHint')}

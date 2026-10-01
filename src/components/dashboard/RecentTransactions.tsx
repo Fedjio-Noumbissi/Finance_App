@@ -1,8 +1,9 @@
 import { Link } from '@tanstack/react-router'
 
+import { useDevise } from '#/lib/currency/store'
 import { useTranslation } from 'react-i18next'
 import { EmptyState } from '#/components/ui/EmptyState'
-import { formatDate, formatMoney } from '#/lib/format'
+import { formatDate } from '#/lib/format'
 import { useCategoryName } from '#/lib/i18n/useCategoryName'
 import type { RecentTransaction } from '#/lib/stats/server'
 
@@ -17,6 +18,7 @@ export function RecentTransactions({
 }
 : RecentTransactionsProps) {
   const { t } = useTranslation()
+  const { formatMontant } = useDevise()
   const categoryName = useCategoryName()
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-5">
@@ -84,7 +86,7 @@ export function RecentTransactions({
                   }
                 >
                   {isIncome ? '+' : '−'}
-                  {formatMoney(transaction.montant)}
+                  {formatMontant(transaction.montant)}
                 </span>
               </li>
             )

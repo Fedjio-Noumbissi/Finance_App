@@ -1,5 +1,7 @@
 import { queryOptions, useQuery } from '@tanstack/react-query'
 
+import { useCurrencyReady } from '#/lib/currency/queries'
+
 import { statsKeys } from './keys'
 import { getBalanceEvolution, getDashboardData } from './server'
 
@@ -20,9 +22,16 @@ export function balanceEvolutionQueryOptions(mois?: string) {
 }
 
 export function useDashboardData(mois?: string) {
-  return useQuery(dashboardQueryOptions(mois))
+  const deviseConnue = useCurrencyReady()
+
+  return useQuery({ ...dashboardQueryOptions(mois), enabled: deviseConnue })
 }
 
 export function useBalanceEvolution(mois?: string) {
-  return useQuery(balanceEvolutionQueryOptions(mois))
+  const deviseConnue = useCurrencyReady()
+
+  return useQuery({
+    ...balanceEvolutionQueryOptions(mois),
+    enabled: deviseConnue,
+  })
 }
