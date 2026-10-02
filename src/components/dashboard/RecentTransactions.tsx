@@ -6,6 +6,7 @@ import { EmptyState } from '#/components/ui/EmptyState'
 import { formatDate } from '#/lib/format'
 import { useCategoryName } from '#/lib/i18n/useCategoryName'
 import type { RecentTransaction } from '#/lib/stats/server'
+import { ReceiptText } from 'lucide-react'
 
 interface RecentTransactionsProps {
   transactions: RecentTransaction[] | undefined
@@ -46,7 +47,7 @@ export function RecentTransactions({
       ) : (transactions ?? []).length === 0 ? (
         <EmptyState
           compact
-          icon="🧾"
+          icon={<ReceiptText className="size-5" strokeWidth={1.75} />}
           title={t('dashboard.noTransactions')}
           description={t('dashboard.noTransactionsHint')}
           actionLabel={t('dashboard.addFirstTransaction')}

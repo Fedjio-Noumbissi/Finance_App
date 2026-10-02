@@ -33,7 +33,7 @@ export function EmptyState({
       {icon ? (
         <span
           aria-hidden
-          className="mb-1 flex h-11 w-11 items-center justify-center rounded-full bg-slate-100 text-xl"
+          className="mb-1 flex size-11 items-center justify-center rounded-full bg-slate-100 text-slate-700"
         >
           {icon}
         </span>

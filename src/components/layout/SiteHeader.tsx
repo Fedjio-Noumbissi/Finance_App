@@ -3,45 +3,14 @@ import { createPortal } from 'react-dom'
 
 import { Link, useRouterState } from '@tanstack/react-router'
 
+import { Menu, X } from 'lucide-react'
+
 import { useTranslation } from 'react-i18next'
 import { LogoutButton } from '#/components/auth/LogoutButton'
 import { LanguageSelector } from '#/components/layout/LanguageSelector'
 import { useAuth } from '#/lib/auth/context'
 
 const MENU_ID = 'site-header-menu'
-
-function MenuIcon() {
-  return (
-    <svg
-      aria-hidden
-      className="h-5 w-5"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={1.8}
-    >
-      <path
-        d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"
-        strokeLinecap="round"
-      />
-    </svg>
-  )
-}
-
-function CloseIcon() {
-  return (
-    <svg
-      aria-hidden
-      className="h-5 w-5"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={1.8}
-    >
-      <path d="M6 18 18 6M6 6l12 12" strokeLinecap="round" />
-    </svg>
-  )
-}
 
 export function SiteHeader({ className = '' }: { className?: string }) {
   const { t } = useTranslation()
@@ -139,7 +108,11 @@ export function SiteHeader({ className = '' }: { className?: string }) {
           onClick={() => setOpen((previous) => !previous)}
           className="-mr-2 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-slate-700 transition hover:bg-slate-100 lg:hidden"
         >
-          {open ? <CloseIcon /> : <MenuIcon />}
+          {open ? (
+            <X aria-hidden className="size-5" strokeWidth={1.8} />
+          ) : (
+            <Menu aria-hidden className="size-5" strokeWidth={1.8} />
+          )}
         </button>
       </div>
 

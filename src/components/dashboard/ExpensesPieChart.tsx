@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { EmptyState } from '#/components/ui/EmptyState'
 import { useCategoryName } from '#/lib/i18n/useCategoryName'
 import type { CategoryExpense } from '#/lib/stats/server'
+import { ChartPie } from 'lucide-react'
 
 interface ExpensesPieChartProps {
   data: CategoryExpense[] | undefined
@@ -62,7 +63,7 @@ export function ExpensesPieChart({ data, isLoading }
       ) : entries.length === 0 ? (
         <EmptyState
           compact
-          icon="📊"
+          icon={<ChartPie className="size-5" strokeWidth={1.75} />}
           title={t('dashboard.noExpenses')}
           description={t('dashboard.noExpensesHint')}
           actionLabel={t('dashboard.addFirstTransaction')}

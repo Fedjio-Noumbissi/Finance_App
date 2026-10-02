@@ -2,6 +2,7 @@ import { useDevise } from '#/lib/currency/store'
 import { useTranslation } from 'react-i18next'
 import { formatMonthName } from '#/lib/format'
 import type { MonthTotals } from '#/lib/stats/server'
+import { Minus, TrendingDown, TrendingUp } from 'lucide-react'
 
 interface SummaryCardsProps {
   totals: MonthTotals | undefined
@@ -93,9 +94,13 @@ export function SummaryCards({
                       : 'bg-slate-100 text-slate-600'
                 }`}
               >
-                <span aria-hidden>
-                  {card.variation > 0 ? '↑' : card.variation < 0 ? '↓' : '='}
-                </span>
+                {card.variation > 0 ? (
+                  <TrendingUp aria-hidden className="size-3.5" strokeWidth={2.5} />
+                ) : card.variation < 0 ? (
+                  <TrendingDown aria-hidden className="size-3.5" strokeWidth={2.5} />
+                ) : (
+                  <Minus aria-hidden className="size-3.5" strokeWidth={2.5} />
+                )}
                 {`${Math.abs(Math.round(card.variation))} %`}
                 <span className="sr-only">
                   {t('dashboard.variationScreenReader')}

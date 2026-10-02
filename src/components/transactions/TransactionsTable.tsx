@@ -18,6 +18,8 @@ import type { TransactionWithCategory } from '#/lib/transactions/server'
 import type { TransactionType } from '#/lib/db/schema'
 
 import { TransactionForm, type CategoryOption } from './TransactionForm'
+import { ReceiptText } from 'lucide-react'
+import { ArrowDown, ArrowUp, ChevronsUpDown } from 'lucide-react'
 
 const EMPTY_ROWS: TransactionWithCategory[] = []
 
@@ -169,7 +171,7 @@ export function TransactionsTable({
   if (table.getRowModel().rows.length === 0) {
     return (
       <EmptyState
-        icon="🧾"
+        icon={<ReceiptText className="size-5" strokeWidth={1.75} />}
         title={t('transaction.table.empty')}
         description={t('transaction.table.emptyHint')}
         actionLabel={t('transaction.table.emptyAction')}
@@ -326,8 +328,18 @@ function SortIndicator({
   direction: false | 'asc' | 'desc'
 }) {
   if (direction === false) {
-    return <span aria-hidden className="text-slate-300">↕</span>
+    return (
+      <ChevronsUpDown
+        aria-hidden
+        className="size-3.5 text-slate-300"
+        strokeWidth={2}
+      />
+    )
   }
 
-  return <span aria-hidden>{direction === 'asc' ? '↑' : '↓'}</span>
+  return direction === 'asc' ? (
+    <ArrowUp aria-hidden className="size-3.5" strokeWidth={2.5} />
+  ) : (
+    <ArrowDown aria-hidden className="size-3.5" strokeWidth={2.5} />
+  )
 }

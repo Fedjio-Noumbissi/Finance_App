@@ -1,4 +1,14 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
+import {
+  CalendarDays,
+  ChartLine,
+  Coins,
+  Languages,
+  LayoutDashboard,
+  Tags,
+  TrendingUp,
+  type LucideIcon,
+} from 'lucide-react'
 
 import { useTranslation } from 'react-i18next'
 import { SiteHeader } from '#/components/layout/SiteHeader'
@@ -6,14 +16,14 @@ import { useAuth } from '#/lib/auth/context'
 
 export const Route = createFileRoute('/')({ component: Home })
 
-const features = [
-  { key: 'feature1', icon: '📊' },
-  { key: 'feature2', icon: '🏷️' },
-  { key: 'feature3', icon: '📈' },
-  { key: 'feature4', icon: '🗓️' },
-  { key: 'feature5', icon: '🌍' },
-  { key: 'feature6', icon: '🪙' },
-] as const
+const features: { key: string; icon: LucideIcon }[] = [
+  { key: 'feature1', icon: LayoutDashboard },
+  { key: 'feature2', icon: Tags },
+  { key: 'feature3', icon: ChartLine },
+  { key: 'feature4', icon: CalendarDays },
+  { key: 'feature5', icon: Languages },
+  { key: 'feature6', icon: Coins },
+]
 
 const steps = ['step1', 'step2', 'step3'] as const
 
@@ -111,7 +121,8 @@ function Home() {
                     {card.value}
                   </p>
                   <p className="mt-2 inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">
-                    <span aria-hidden>↑</span>12 %
+                    <TrendingUp aria-hidden className="size-3" strokeWidth={2.5} />
+                    12 %
                   </p>
                 </div>
               ))}
@@ -149,25 +160,29 @@ function Home() {
             </div>
 
             <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {features.map((feature) => (
-                <div
-                  key={feature.key}
-                  className="group rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-slate-300 hover:shadow-lg hover:shadow-slate-900/5"
-                >
-                  <span
-                    aria-hidden
-                    className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 text-xl transition group-hover:bg-slate-900"
+              {features.map((feature) => {
+                const Icone = feature.icon
+
+                return (
+                  <div
+                    key={feature.key}
+                    className="group rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-slate-300 hover:shadow-lg hover:shadow-slate-900/5"
                   >
-                    {feature.icon}
-                  </span>
-                  <h3 className="mt-4 font-semibold text-slate-900">
-                    {t(`home.${feature.key}Title`)}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-600">
-                    {t(`home.${feature.key}Body`)}
-                  </p>
-                </div>
-              ))}
+                    <span
+                      aria-hidden
+                      className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 text-slate-900 transition group-hover:bg-slate-900 group-hover:text-white"
+                    >
+                      <Icone className="size-5" strokeWidth={2} />
+                    </span>
+                    <h3 className="mt-4 font-semibold text-slate-900">
+                      {t(`home.${feature.key}Title`)}
+                    </h3>
+                    <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                      {t(`home.${feature.key}Body`)}
+                    </p>
+                  </div>
+                )
+              })}
             </div>
           </div>
         </section>

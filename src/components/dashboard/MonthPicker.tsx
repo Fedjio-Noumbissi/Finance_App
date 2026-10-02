@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { formatMonthName } from '#/lib/format'
 import { currentMonthKey, listMonthKeys, shiftMonthKey } from '#/lib/dates/months'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface MonthPickerProps {
   value: string
@@ -22,7 +23,7 @@ export function MonthPicker({ value, onChange }: MonthPickerProps) {
         aria-label={t('month.previous')}
         title={t('month.previous')}
       >
-        <span aria-hidden>‹</span>
+        <ChevronLeft aria-hidden className="size-4" strokeWidth={2} />
       </button>
 
       <label className="sr-only" htmlFor="month-picker">
@@ -49,7 +50,7 @@ export function MonthPicker({ value, onChange }: MonthPickerProps) {
         aria-label={t('month.next')}
         title={t('month.next')}
       >
-        <span aria-hidden>›</span>
+        <ChevronRight aria-hidden className="size-4" strokeWidth={2} />
       </button>
     </div>
   )

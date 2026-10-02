@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 
+import { PartyPopper, ReceiptText, Tags, Hand, type LucideIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '#/lib/auth/context'
 
@@ -7,11 +8,11 @@ const STEPS = ['welcome', 'categories', 'firstTransaction', 'done'] as const
 
 type Step = (typeof STEPS)[number]
 
-const STEP_ICONS: Record<Step, string> = {
-  welcome: '👋',
-  categories: '🏷️',
-  firstTransaction: '🧾',
-  done: '🎉',
+const STEP_ICONS: Record<Step, LucideIcon> = {
+  welcome: Hand,
+  categories: Tags,
+  firstTransaction: ReceiptText,
+  done: PartyPopper,
 }
 
 export function OnboardingFlow() {
@@ -55,6 +56,7 @@ export function OnboardingFlow() {
   }
 
   const index = STEPS.indexOf(step)
+  const StepIcon = STEP_ICONS[step]
   const isLast = index === STEPS.length - 1
 
   return (
@@ -66,8 +68,11 @@ export function OnboardingFlow() {
     >
       <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
         <div className="mb-4 flex items-center justify-between">
-          <span aria-hidden className="text-3xl">
-            {STEP_ICONS[step]}
+          <span
+            aria-hidden
+            className="flex size-10 items-center justify-center rounded-xl bg-slate-100 text-slate-900"
+          >
+            <StepIcon className="size-5" strokeWidth={1.75} />
           </span>
           <span className="text-xs font-medium text-slate-400">
             {`${index + 1} / ${STEPS.length}`}

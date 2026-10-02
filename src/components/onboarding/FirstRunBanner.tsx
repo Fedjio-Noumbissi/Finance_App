@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { EmptyState } from '#/components/ui/EmptyState'
+import { Sparkles } from 'lucide-react'
 
 export function FirstRunBanner() {
   const { t } = useTranslation()
@@ -7,7 +8,7 @@ export function FirstRunBanner() {
   return (
     <section className="rounded-2xl border border-slate-200 bg-white">
       <EmptyState
-        icon="👋"
+        icon={<Sparkles className="size-5" strokeWidth={1.75} />}
         title={t('onboarding.firstRunTitle')}
         description={t('onboarding.firstRunDescription')}
         actionLabel={t('onboarding.firstRunAction')}
