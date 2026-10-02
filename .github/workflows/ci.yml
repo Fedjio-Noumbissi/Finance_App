@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Valeurs factices : le build n'execute pas ces modules cote serveur.
+  # `npm run db:migrate` utilise un vrai Postgres via le service du job dedie.
+  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/finance_ci
+  SESSION_SECRET: secret-ci-uniquement-pour-le-build-64-caracteres-minimum
+  VITE_FIREBASE_API_KEY: ''
+
+jobs:
+  qualite:
+    name: Typecheck, tests et build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Verifier que les routes generees sont a jour
+        run: |
+          npm run generate-routes
+          git diff --exit-code -- src/routeTree.gen.ts
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Tests unitaires
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+  migrations:
+    name: Migrations sur une base vierge
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: finance_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d finance_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/finance_ci
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Appliquer toutes les migrations
+        run: npm run db:migrate
+
+      - name: Verifier que le second passage ne change rien
+        run: npm run db:migrate
