@@ -1,3 +1,4 @@
+import { Coins, Globe2, Tags, UserRound, type LucideIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { FormAlert } from '#/components/auth/AuthCard'
 import { useCategories } from '#/lib/categories/queries'
@@ -11,25 +12,40 @@ import { CategoryRow } from './CategoryRow'
 function Section({
   title,
   description,
+  icon: Icone,
   children,
 }: {
   title: string
   description?: string
+  icon: LucideIcon
   children: React.ReactNode
 }) {
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-5">
-      <header className="mb-4">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-          {title}
-        </h2>
-        {description ? (
-          <p className="mt-1 text-xs text-slate-500">{description}</p>
-        ) : null}
+      <header className="mb-4 flex items-start gap-3">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-white">
+          <Icone aria-hidden className="size-4" strokeWidth={1.9} />
+        </span>
+        <div>
+          <h2 className="text-sm font-semibold tracking-tight text-slate-900">
+            {title}
+          </h2>
+          {description ? (
+            <p className="mt-0.5 text-xs text-slate-500">{description}</p>
+          ) : null}
+        </div>
       </header>
       {children}
     </section>
   )
+}
+
+function initials(email: string | null): string {
+  if (!email) {
+    return '?'
+  }
+
+  return email.slice(0, 2).toUpperCase()
 }
 
 export function SettingsPanels() {
@@ -43,26 +59,31 @@ export function SettingsPanels() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Section title={t('settings.account.title')}>
-        <dl className="flex flex-col gap-3 text-sm">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <dt className="text-slate-500">{t('settings.account.email')}</dt>
-            <dd className="font-medium break-all text-slate-800">
+      <Section title={t('settings.account.title')} icon={UserRound}>
+        <div className="flex items-center gap-4">
+          <span
+            aria-hidden
+            className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-slate-900 text-lg font-bold text-white"
+          >
+            {initials(user?.email ?? null)}
+          </span>
+
+          <dl className="flex min-w-0 flex-col gap-1.5 text-sm">
+            <dd className="truncate font-medium text-slate-900">
               {user?.email ?? t('settings.account.unknownEmail')}
             </dd>
-          </div>
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <dt className="text-slate-500">{t('settings.account.language')}</dt>
-            <dd className="font-medium text-slate-800">
+            <div className="flex items-center gap-1.5 text-xs text-slate-500">
+              <Globe2 aria-hidden className="size-3.5" strokeWidth={1.9} />
               {t(`language.${language}`)}
-            </dd>
-          </div>
-        </dl>
+            </div>
+          </dl>
+        </div>
       </Section>
 
       <Section
         title={t('settings.currency.title')}
         description={t('settings.currency.description')}
+        icon={Coins}
       >
         <CurrencyPanel />
       </Section>
@@ -70,6 +91,7 @@ export function SettingsPanels() {
       <Section
         title={t('settings.categories.title')}
         description={t('settings.categories.description')}
+        icon={Tags}
       >
         {categories.isPending ? (
           <ul className="flex flex-col gap-2" aria-hidden>

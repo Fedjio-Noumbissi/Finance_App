@@ -67,18 +67,6 @@ function aplatir(objet: Langue, prefixe = '', sortie = new Map<string, string>()
   return sortie
 }
 
-function resoudre(objet: Langue, cle: string): unknown {
-  return cle
-    .split('.')
-    .reduce<unknown>(
-      (accumulateur, partie) =>
-        accumulateur && typeof accumulateur === 'object'
-          ? (accumulateur as Langue)[partie]
-          : undefined,
-      objet,
-    )
-}
-
 function placeholders(texte: string): string[] {
   return [...texte.matchAll(/\{([a-zA-Z0-9_]+)\}/g)].map((m) => m[1]).sort()
 }
@@ -122,13 +110,13 @@ describe('parite FR / EN', () => {
 
 describe('cles utilisees dans le code', () => {
   it('toutes les cles t() existent en francais', () => {
-    const manquantes = clesCode.filter((cle) => resoudre(fr as Langue, cle) === undefined)
+    const manquantes = clesCode.filter((cle) => !clesFr.has(cle))
 
     expect(manquantes).toEqual([])
   })
 
   it('toutes les cles t() existent en anglais', () => {
-    const manquantes = clesCode.filter((cle) => resoudre(en as Langue, cle) === undefined)
+    const manquantes = clesCode.filter((cle) => !clesEn.has(cle))
 
     expect(manquantes).toEqual([])
   })

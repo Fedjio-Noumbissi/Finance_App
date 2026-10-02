@@ -1,7 +1,7 @@
 import { Navigate, createFileRoute } from '@tanstack/react-router'
 
+import { AuthLayout } from '#/components/auth/AuthLayout'
 import { SignupForm } from '#/components/auth/SignupForm'
-import { SiteHeader } from '#/components/layout/SiteHeader'
 import { useAuth } from '#/lib/auth/context'
 import { redirectIfAuthenticated } from '#/lib/auth/guard'
 
@@ -20,11 +20,8 @@ function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <SiteHeader />
-      <main className="flex min-h-[80vh] items-center justify-center px-4 py-10">
-        <SignupForm />
-      </main>
-    </div>
+    <AuthLayout>
+      <SignupForm />
+    </AuthLayout>
   )
 }

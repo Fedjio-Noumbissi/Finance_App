@@ -1,28 +1,21 @@
-import { useDevise } from '#/lib/currency/store'
+import { useMemo } from 'react'
+
+import { ArrowDownRight, ArrowUpRight, Scale } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { useDevise } from '#/lib/currency/store'
 import { formatMonthName } from '#/lib/format'
 import type { MonthTotals } from '#/lib/stats/server'
-import { Minus, TrendingDown, TrendingUp } from 'lucide-react'
+
+import { DeltaPill, StatCard } from '#/components/ui/StatCard'
+import { Sparkline } from '#/components/ui/Sparkline'
 
 interface SummaryCardsProps {
   totals: MonthTotals | undefined
   previousTotals: MonthTotals | undefined
   mois: string
   isLoading: boolean
-}
-
-interface CardData {
-  label: string
-  value: string
-  hint: string
-  tone: 'default' | 'income' | 'expense'
-  variation: number | null
-}
-
-const toneClass: Record<CardData['tone'], string> = {
-  default: 'text-slate-900',
-  income: 'text-emerald-600',
-  expense: 'text-rose-600',
+  /** Soldes des derniers mois pour la courbe du solde. */
+  evolution: number[]
 }
 
 function variationPct(
@@ -41,75 +34,65 @@ export function SummaryCards({
   previousTotals,
   mois,
   isLoading,
+  evolution,
 }: SummaryCardsProps) {
   const { t } = useTranslation()
   const { formatMontant } = useDevise()
 
-  const cards: CardData[] = [
-    {
-      label: t('dashboard.balance'),
-      value: totals ? formatMontant(totals.solde) : '—',
-      hint: t('dashboard.balanceHint'),
-      tone: totals && totals.solde < 0 ? 'expense' : 'default',
-      variation: variationPct(totals?.solde, previousTotals?.solde),
-    },
-    {
-      label: t('dashboard.income'),
-      value: totals ? formatMontant(totals.revenus) : '—',
-      hint: formatMonthName(mois),
-      tone: 'income',
-      variation: variationPct(totals?.revenus, previousTotals?.revenus),
-    },
-    {
-      label: t('dashboard.expense'),
-      value: totals ? formatMontant(totals.depenses) : '—',
-      hint: formatMonthName(mois),
-      tone: 'expense',
-      variation: variationPct(totals?.depenses, previousTotals?.depenses),
-    },
-  ]
+  const soldeSerie = useMemo(() => evolution.slice(-6), [evolution])
 
   return (
-    <div className="grid gap-3 sm:grid-cols-3">
-      {cards.map((card) => (
-        <div
-          key={card.label}
-          className="rounded-2xl border border-slate-200 bg-white p-5"
-        >
-          <p className="text-sm text-slate-500">{card.label}</p>
-          <p
-            className={`mt-2 text-2xl font-bold tracking-tight tabular-nums ${toneClass[card.tone]}`}
-          >
-            {isLoading ? '…' : card.value}
-          </p>
-          <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
-            <p className="text-xs text-slate-400">{card.hint}</p>
-            {card.variation === null ? null : (
-              <span
-                className={`inline-flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-xs font-medium ${
-                  card.variation > 0
-                    ? 'bg-emerald-50 text-emerald-700'
-                    : card.variation < 0
-                      ? 'bg-rose-50 text-rose-700'
-                      : 'bg-slate-100 text-slate-600'
-                }`}
-              >
-                {card.variation > 0 ? (
-                  <TrendingUp aria-hidden className="size-3.5" strokeWidth={2.5} />
-                ) : card.variation < 0 ? (
-                  <TrendingDown aria-hidden className="size-3.5" strokeWidth={2.5} />
-                ) : (
-                  <Minus aria-hidden className="size-3.5" strokeWidth={2.5} />
-                )}
-                {`${Math.abs(Math.round(card.variation))} %`}
-                <span className="sr-only">
-                  {t('dashboard.variationScreenReader')}
-                </span>
-              </span>
-            )}
-          </div>
-        </div>
-      ))}
+    <div className="grid gap-3 lg:grid-cols-[1.4fr_1fr_1fr]">
+      <StatCard
+        emphasis
+        label={t('dashboard.balance')}
+        value={isLoading ? '…' : totals ? formatMontant(totals.solde) : '—'}
+        icon={<Scale aria-hidden className="size-4" strokeWidth={1.9} />}
+        delta={
+          <DeltaPill
+            emphasis
+            percent={variationPct(totals?.solde, previousTotals?.solde)}
+            label={t('dashboard.variationScreenReader')}
+          />
+        }
+        hint={formatMonthName(mois)}
+        footer={
+          <Sparkline
+            values={soldeSerie}
+            tone={totals && totals.solde < 0 ? 'expense' : 'income'}
+            label={t('dashboard.balanceEvolutionLabel')}
+          />
+        }
+      />
+
+      <StatCard
+        tone="income"
+        label={t('dashboard.income')}
+        value={isLoading ? '…' : totals ? formatMontant(totals.revenus) : '—'}
+        icon={<ArrowUpRight aria-hidden className="size-4" strokeWidth={2.2} />}
+        delta={
+          <DeltaPill
+            percent={variationPct(totals?.revenus, previousTotals?.revenus)}
+            label={t('dashboard.variationScreenReader')}
+          />
+        }
+        hint={formatMonthName(mois)}
+      />
+
+      <StatCard
+        tone="expense"
+        label={t('dashboard.expense')}
+        value={isLoading ? '…' : totals ? formatMontant(totals.depenses) : '—'}
+        icon={<ArrowDownRight aria-hidden className="size-4" strokeWidth={2.2} />}
+        delta={
+          <DeltaPill
+            inverted
+            percent={variationPct(totals?.depenses, previousTotals?.depenses)}
+            label={t('dashboard.variationScreenReader')}
+          />
+        }
+        hint={formatMonthName(mois)}
+      />
     </div>
   )
 }

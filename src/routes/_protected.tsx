@@ -17,16 +17,18 @@ export const Route = createFileRoute('/_protected')({
 
 function ProtectedLayout() {
   return (
-    <div className="min-h-screen bg-slate-50">
-      <AppSidebar />
-      <div className="lg:pl-60">
-        <SiteHeader className="lg:hidden" />
-        <DeviseProvider>
+    // Le provider englobe la barre laterale et l'entete : le selecteur de
+    // devise de l'enetre lit la meme source que les pages.
+    <DeviseProvider>
+      <div className="min-h-screen bg-slate-50">
+        <AppSidebar />
+        <div className="lg:pl-60">
+          <SiteHeader className="lg:hidden" />
           <Outlet />
-        </DeviseProvider>
+        </div>
+        <QuickAddFab />
+        <OnboardingFlow />
       </div>
-      <QuickAddFab />
-      <OnboardingFlow />
-    </div>
+    </DeviseProvider>
   )
 }

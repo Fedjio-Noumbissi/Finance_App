@@ -49,7 +49,13 @@
     "welcomeSubtitle": "Vos transactions restent privées.",
     "signupTitle": "Créez votre compte",
     "signupSubtitle": "Cela prend moins d’une minute.",
-    "logoutError": "Impossible de vous déconnecter. Réessayez."
+    "logoutError": "Impossible de vous déconnecter. Réessayez.",
+    "panelTitle": "Votre argent, en un coup d’œil.",
+    "panelBalance": "Solde total",
+    "panelBalanceValue": "1 240 500 F CFA",
+    "panelFeatureCategories": "Catégories et transactions en 2 gestes",
+    "panelFeatureStats": "Répartitions et courbes par mois",
+    "panelFeatureCurrencies": "Toutes les devises, conversions incluses"
   },
   "authError": {
     "invalidEmail": "Adresse e-mail invalide.",
@@ -83,7 +89,10 @@
     "noExpensesHint": "Ajoutez une dépense pour voir la répartition par catégorie.",
     "addFirstTransaction": "Ajouter une transaction",
     "noTransactionsHint": "Vos premiers revenus et dépenses apparaîtront ici.",
-    "variationScreenReader": "variation par rapport au mois précédent"
+    "variationScreenReader": "variation par rapport au mois précédent",
+    "balanceEvolutionLabel": "Évolution du solde sur 6 mois",
+    "categoryTotal": "Total : {total}",
+    "noCategoryData": "Aucune dépense ce mois-ci."
   },
   "stats": {
     "title": "Statistiques",
@@ -98,7 +107,8 @@
     "serieIncome": "Revenus",
     "serieExpense": "Dépenses",
     "noData": "Pas encore de données sur cette période.",
-    "loadError": "Impossible de charger les statistiques."
+    "loadError": "Impossible de charger les statistiques.",
+    "sparklineLabel": "Soldes mensuels sur 6 mois"
   },
   "transaction": {
     "title": "Transactions",
@@ -121,7 +131,7 @@
       "fixErrors": "Veuillez corriger les champs en rouge.",
       "error": "Enregistrement impossible.",
       "devise": "Devise",
-      "deviseHint": "Saisie en {devise} — 100 {devise} ≈ {exemple}"
+      "deviseHint": "Saisie et totaux en {devise} — 100 {devise} ≈ {exemple}"
     },
     "filters": {
       "categorie": "Catégorie",
@@ -150,6 +160,11 @@
       "emptyHint": "Ajoutez votre première transaction ou élargissez la période sélectionnée.",
       "emptyAction": "Ajouter une transaction",
       "originalAmount": "Montant saisi dans la devise d'origine"
+    },
+    "totals": {
+      "solde": "Solde de la période",
+      "income": "Revenus",
+      "expense": "Dépenses"
     }
   },
   "validation": {
@@ -172,7 +187,10 @@
     "fallback": "Sans catégorie"
   },
   "currency": {
-    "placeholder": "0,00"
+    "placeholder": "0,00",
+    "label": "Devise d’affichage",
+    "hint": "Devise d’affichage : tous les totaux sont convertis",
+    "totals": "Totaux en"
   },
   "serverError": {
     "missingToken": "Jeton Firebase manquant.",
@@ -265,7 +283,8 @@
     "start": "Commencer",
     "firstRunTitle": "Aucune transaction pour le moment",
     "firstRunDescription": "Ajoutez votre première transaction pour voir apparaître vos totaux, vos graphiques et votre budget mensuel.",
-    "firstRunAction": "Ajouter ma première transaction"
+    "firstRunAction": "Ajouter ma première transaction",
+    "stepProgress": "Étape {current} sur {total}"
   },
   "month": {
     "label": "Mois analysé",

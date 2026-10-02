@@ -49,7 +49,13 @@
     "welcomeSubtitle": "Your transactions stay private.",
     "signupTitle": "Create your account",
     "signupSubtitle": "It takes less than a minute.",
-    "logoutError": "Could not sign you out. Please try again."
+    "logoutError": "Could not sign you out. Please try again.",
+    "panelTitle": "Your money at a glance.",
+    "panelBalance": "Total balance",
+    "panelBalanceValue": "€ 1,240,500",
+    "panelFeatureCategories": "Categories and entries in 2 taps",
+    "panelFeatureStats": "Breakdowns and charts by month",
+    "panelFeatureCurrencies": "Every currency, conversions included"
   },
   "authError": {
     "invalidEmail": "Invalid email address.",
@@ -83,7 +89,10 @@
     "noExpensesHint": "Add an expense to see the breakdown by category.",
     "addFirstTransaction": "Add a transaction",
     "noTransactionsHint": "Your first income and expenses will show up here.",
-    "variationScreenReader": "change compared to the previous month"
+    "variationScreenReader": "change compared to the previous month",
+    "balanceEvolutionLabel": "Balance trend over 6 months",
+    "categoryTotal": "Total: {total}",
+    "noCategoryData": "No expense this month."
   },
   "stats": {
     "title": "Statistics",
@@ -98,7 +107,8 @@
     "serieIncome": "Income",
     "serieExpense": "Expenses",
     "noData": "No data for this period yet.",
-    "loadError": "Could not load the statistics."
+    "loadError": "Could not load the statistics.",
+    "sparklineLabel": "Monthly balance over 6 months"
   },
   "transaction": {
     "title": "Transactions",
@@ -121,7 +131,7 @@
       "fixErrors": "Please fix the highlighted fields.",
       "error": "Could not save.",
       "devise": "Currency",
-      "deviseHint": "Entered in {devise} — 100 {devise} ≈ {exemple}"
+      "deviseHint": "Entry and totals in {devise} — 100 {devise} ≈ {exemple}"
     },
     "filters": {
       "categorie": "Category",
@@ -150,6 +160,11 @@
       "emptyHint": "Add your first transaction or widen the selected period.",
       "emptyAction": "Add a transaction",
       "originalAmount": "Amount entered in the original currency"
+    },
+    "totals": {
+      "solde": "Period balance",
+      "income": "Income",
+      "expense": "Expenses"
     }
   },
   "validation": {
@@ -172,7 +187,10 @@
     "fallback": "Uncategorised"
   },
   "currency": {
-    "placeholder": "0.00"
+    "placeholder": "0.00",
+    "label": "Display currency",
+    "hint": "Display currency: every total is converted",
+    "totals": "Totals in"
   },
   "serverError": {
     "missingToken": "Missing Firebase token.",
@@ -265,7 +283,8 @@
     "start": "Get started",
     "firstRunTitle": "No transaction yet",
     "firstRunDescription": "Add your first transaction to see your totals, charts and monthly budget come to life.",
-    "firstRunAction": "Add my first transaction"
+    "firstRunAction": "Add my first transaction",
+    "stepProgress": "Step {current} of {total}"
   },
   "month": {
     "label": "Analysed month",

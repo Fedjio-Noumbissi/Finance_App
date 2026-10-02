@@ -1,6 +1,7 @@
 import { useForm } from '@tanstack/react-form'
 import { useId, useRef, useState } from 'react'
 
+import { Loader2, Sparkles } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { FormAlert, submitButtonClass } from '#/components/auth/AuthCard'
 import { useDevise } from '#/lib/currency/store'
@@ -61,7 +62,8 @@ export function TransactionForm({
 : TransactionFormProps) {
   const { t } = useTranslation()
   const categoryName = useCategoryName()
-  const { devise, currencies, formatMontantAvecCode } = useDevise()
+  const { devise, currencies, formatMontantAvecCode, isUpdatingDevise, setDevise } =
+    useDevise()
   const isEdit = Boolean(transaction)
 
   const create = useCreateTransaction()
@@ -185,8 +187,18 @@ export function TransactionForm({
                 name="devise"
                 className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-lg text-slate-900 outline-none transition focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10"
                 value={field.state.value}
-                onChange={(event) => field.handleChange(event.target.value)}
-                onBlur={field.handleBlur}
+                onChange={(event) => {
+                  const code = event.target.value
+
+                  field.handleChange(code)
+
+                  // La devise saisie devient la devise d'affichage : tous les
+                  // totaux, listes et graphiques suivent immediatement.
+                  if (!transaction) {
+                    void setDevise(code)
+                  }
+                }}
+                onBlur={() => field.handleBlur()}
               >
                 {currencies.map((currency) => (
                   <option key={currency.code} value={currency.code}>
@@ -194,7 +206,12 @@ export function TransactionForm({
                   </option>
                 ))}
               </select>
-              <p className="text-xs text-slate-500">
+              <p className="flex items-center gap-1.5 text-xs text-slate-500">
+                {isUpdatingDevise ? (
+                  <Loader2 aria-hidden className="size-3 animate-spin" strokeWidth={2} />
+                ) : (
+                  <Sparkles aria-hidden className="size-3 text-slate-400" strokeWidth={1.8} />
+                )}
                 {t('transaction.form.deviseHint', {
                   devise: field.state.value,
                   exemple: formatMontantAvecCode(100, field.state.value),

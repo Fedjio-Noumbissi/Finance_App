@@ -11,6 +11,7 @@ import {
 } from '#/lib/transactions/queries'
 
 import { TransactionForm } from './TransactionForm'
+import { TransactionTotals } from './TransactionTotals'
 import { TransactionsTable } from './TransactionsTable'
 import {
   filtersToMonthKey,
@@ -106,6 +107,11 @@ export function TransactionsPage() {
         state={filters}
         onChange={setFilters}
         categories={categories}
+      />
+
+      <TransactionTotals
+        rows={transactionsQuery.data}
+        isLoading={transactionsQuery.isPending}
       />
 
       <section className="rounded-2xl border border-slate-200 bg-white">

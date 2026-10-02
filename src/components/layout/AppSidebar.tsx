@@ -10,6 +10,7 @@ import {
 
 import { useTranslation } from 'react-i18next'
 import { LogoutButton } from '#/components/auth/LogoutButton'
+import { CurrencySelector } from '#/components/layout/CurrencySelector'
 import { LanguageSelector } from '#/components/layout/LanguageSelector'
 import { useAuth } from '#/lib/auth/context'
 
@@ -90,7 +91,8 @@ export function AppSidebar() {
       </nav>
 
       <div className="shrink-0 border-t border-slate-200 p-3">
-        <div className="mb-2 px-1">
+        <div className="mb-2 flex items-center gap-2 px-1">
+          <CurrencySelector className="min-w-0 flex-1" />
           <LanguageSelector />
         </div>
         <LogoutButton block />

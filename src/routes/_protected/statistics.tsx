@@ -1,10 +1,13 @@
 import { createFileRoute, useNavigate, useSearch } from '@tanstack/react-router'
 
+import { CalendarRange, Layers } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useDevise } from '#/lib/currency/store'
 import { MonthPicker } from '#/components/dashboard/MonthPicker'
 import { BalanceLineChart } from '#/components/stats/BalanceLineChart'
 import { ErrorPanel } from '#/components/ui/ErrorPanel'
+import { Sparkline } from '#/components/ui/Sparkline'
+import { StatCard } from '#/components/ui/StatCard'
 import { currentMonthKey, isMonthKey } from '#/lib/dates/months'
 
 import { useBalanceEvolution } from '#/lib/stats/queries'
@@ -60,29 +63,53 @@ function StatisticsPage() {
       ) : null}
 
       <div className="grid gap-3 sm:grid-cols-2">
-        <div className="rounded-2xl border border-slate-200 bg-white p-5">
-          <p className="text-sm text-slate-500">{t('stats.currentBalance')}</p>
-          <p
-            className={`mt-2 text-2xl font-bold tabular-nums ${last && last.solde < 0 ? 'text-rose-600' : 'text-slate-900'}`}
-          >
-            {evolution.isPending || !last ? '…' : formatMontant(last.solde)}
-          </p>
-          <p className="mt-1 text-xs text-slate-400">
-            {t('stats.lastSixMonths')}
-          </p>
-        </div>
+        <StatCard
+          label={t('stats.currentBalance')}
+          value={evolution.isPending || !last ? '…' : formatMontant(last.solde)}
+          tone={last && last.solde < 0 ? 'expense' : 'default'}
+          icon={<CalendarRange aria-hidden className="size-4" strokeWidth={1.9} />}
+          hint={t('stats.lastSixMonths')}
+          footer={
+            <Sparkline
+              values={(points ?? []).map((point) => point.solde)}
+              tone={last && last.solde < 0 ? 'expense' : 'income'}
+              label={t('stats.sparklineLabel')}
+            />
+          }
+        />
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-5">
-          <p className="text-sm text-slate-500">{t('stats.cumulativeBalance')}</p>
-          <p
-            className={`mt-2 text-2xl font-bold tabular-nums ${cumulSolde < 0 ? 'text-rose-600' : 'text-emerald-600'}`}
-          >
-            {evolution.isPending ? '…' : formatMontant(cumulSolde)}
-          </p>
-          <p className="mt-1 text-xs text-slate-400">
-            {t('stats.cumulativeHint')}
-          </p>
-        </div>
+        <StatCard
+          label={t('stats.cumulativeBalance')}
+          value={evolution.isPending ? '…' : formatMontant(cumulSolde)}
+          tone={cumulSolde < 0 ? 'expense' : 'income'}
+          icon={<Layers aria-hidden className="size-4" strokeWidth={1.9} />}
+          hint={t('stats.cumulativeHint')}
+          footer={
+            <div className="flex h-9 items-end gap-1" aria-hidden>
+              {(points ?? []).map((point) => {
+                const max = Math.max(
+                  ...(points ?? []).map((p) => Math.abs(p.solde)),
+                  1,
+                )
+
+                return (
+                  <span
+                    key={point.mois}
+                    className={`flex-1 rounded-t-sm ${
+                      point.solde < 0 ? 'bg-rose-400' : 'bg-emerald-400'
+                    }`}
+                    style={{
+                      height: `${Math.max(
+                        6,
+                        (Math.abs(point.solde) / max) * 100,
+                      )}%`,
+                    }}
+                  />
+                )
+              })}
+            </div>
+          }
+        />
       </div>
 
       <BalanceLineChart points={points} isLoading={evolution.isPending} />

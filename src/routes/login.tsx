@@ -1,7 +1,7 @@
 import { Navigate, createFileRoute } from '@tanstack/react-router'
 
+import { AuthLayout } from '#/components/auth/AuthLayout'
 import { LoginForm } from '#/components/auth/LoginForm'
-import { SiteHeader } from '#/components/layout/SiteHeader'
 import { redirectIfAuthenticated } from '#/lib/auth/guard'
 import { useAuth } from '#/lib/auth/context'
 
@@ -24,11 +24,8 @@ function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <SiteHeader />
-      <main className="flex min-h-[80vh] items-center justify-center px-4 py-10">
-        <LoginForm redirect={redirect} />
-      </main>
-    </div>
+    <AuthLayout>
+      <LoginForm redirect={redirect} />
+    </AuthLayout>
   )
 }

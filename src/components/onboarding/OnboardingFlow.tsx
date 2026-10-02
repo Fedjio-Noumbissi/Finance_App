@@ -66,30 +66,51 @@ export function OnboardingFlow() {
       aria-modal="true"
       aria-labelledby="onboarding-title"
     >
-      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-        <div className="mb-4 flex items-center justify-between">
-          <span
-            aria-hidden
-            className="flex size-10 items-center justify-center rounded-xl bg-slate-100 text-slate-900"
-          >
-            <StepIcon className="size-5" strokeWidth={1.75} />
-          </span>
-          <span className="text-xs font-medium text-slate-400">
-            {`${index + 1} / ${STEPS.length}`}
-          </span>
+      <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-xl">
+        <div className="h-1.5 w-full bg-slate-100">
+          <div
+            className="h-full rounded-r-full bg-slate-900 transition-all duration-300"
+            style={{ width: `${((index + 1) / STEPS.length) * 100}%` }}
+          />
         </div>
 
-        <h2
-          id="onboarding-title"
-          className="text-lg font-semibold text-slate-900"
-        >
-          {t(`onboarding.${step}Title`)}
-        </h2>
-        <p className="mt-2 text-sm text-slate-600">
-          {t(`onboarding.${step}Body`)}
-        </p>
+        <div className="p-6">
+          <div className="mb-4 flex items-center justify-between">
+            <span
+              aria-hidden
+              className="flex size-12 items-center justify-center rounded-2xl bg-slate-900 text-white"
+            >
+              <StepIcon className="size-6" strokeWidth={1.75} />
+            </span>
 
-        <div className="mt-6 flex items-center justify-between gap-3">
+            <div aria-hidden className="flex items-center gap-1.5">
+              {STEPS.map((etape, position) => (
+                <span
+                  key={etape}
+                  className={`h-1.5 rounded-full transition-all ${
+                    position === index ? 'w-5 bg-slate-900' : 'w-1.5 bg-slate-200'
+                  }`}
+                />
+              ))}
+            </div>
+
+            <span className="sr-only">
+              {t('onboarding.stepProgress', { current: index + 1, total: STEPS.length })}
+            </span>
+          </div>
+
+          <h2
+            id="onboarding-title"
+            className="text-lg font-semibold text-slate-900"
+          >
+            {t(`onboarding.${step}Title`)}
+          </h2>
+          <p className="mt-2 text-sm text-slate-600">
+            {t(`onboarding.${step}Body`)}
+          </p>
+        </div>
+
+        <div className="flex items-center justify-between gap-3 border-t border-slate-100 px-6 py-4">
           <button
             type="button"
             className="rounded-lg px-3 py-2 text-sm font-medium text-slate-500 transition hover:bg-slate-100"

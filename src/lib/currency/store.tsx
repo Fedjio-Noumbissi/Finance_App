@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 
 import { formatCompactMoney, formatConverted, formatMoney } from '#/lib/format'
 
-import { useCurrenciesQuery } from './queries'
+import { useCurrenciesQuery, useUpdatePreferredCurrency } from './queries'
 
 export interface DeviseContextValue {
   /** Devise d'affichage choisie par l'utilisateur. */
@@ -19,6 +19,13 @@ export interface DeviseContextValue {
     tauxVersXof: number
   }[]
   isPending: boolean
+  /** Vrai pendant l'enregistrement d'un changement de devise d'affichage. */
+  isUpdatingDevise: boolean
+  /**
+   * Change la devise d'affichage : elle est enregistree pour l'utilisateur et
+   * tous les montants (totaux, listes, graphiques) sont convertis.
+   */
+  setDevise: (code: string) => Promise<void>
   /** Formate un montant dans la devise d'affichage. */
   formatMontant: (value: string | number) => string
   /** Version abrégée pour les axes de graphiques. */
@@ -31,7 +38,9 @@ const DeviseContext = createContext<DeviseContextValue | null>(null)
 
 export function DeviseProvider({ children }: { children: ReactNode }) {
   const { data, isPending } = useCurrenciesQuery()
+  const updateDevise = useUpdatePreferredCurrency()
   const devise = data?.devise ?? 'XOF'
+  const enregistrerDevise = updateDevise.mutateAsync
 
   const value = useMemo<DeviseContextValue>(
     () => ({
@@ -41,12 +50,20 @@ export function DeviseProvider({ children }: { children: ReactNode }) {
       deviseMiseAJour: data?.deviseMiseAJour ?? null,
       currencies: data?.currencies ?? [],
       isPending,
+      isUpdatingDevise: updateDevise.isPending,
+      setDevise: async (code: string) => {
+        if (code === devise) {
+          return
+        }
+
+        await enregistrerDevise({ devise: code })
+      },
       formatMontant: (montant) => formatConverted(Number(montant), devise),
       formatCompact: (montant) => formatCompactMoney(Number(montant), devise),
       formatMontantAvecCode: (montant, code) =>
         `${formatMoney(montant, code)} ${code}`,
     }),
-    [data, devise, isPending],
+    [data, devise, isPending, enregistrerDevise, updateDevise.isPending],
   )
 
   return <DeviseContext value={value}>{children}</DeviseContext>

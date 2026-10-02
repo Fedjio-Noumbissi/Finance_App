@@ -7,6 +7,7 @@ import { Menu, X } from 'lucide-react'
 
 import { useTranslation } from 'react-i18next'
 import { LogoutButton } from '#/components/auth/LogoutButton'
+import { CurrencySelector } from '#/components/layout/CurrencySelector'
 import { LanguageSelector } from '#/components/layout/LanguageSelector'
 import { useAuth } from '#/lib/auth/context'
 
@@ -76,6 +77,7 @@ export function SiteHeader({ className = '' }: { className?: string }) {
           aria-label={t('nav.primary')}
           className="hidden items-center gap-5 text-sm lg:flex"
         >
+          {user ? <CurrencySelector /> : null}
           <LanguageSelector />
 
           {links.map((link) => {
@@ -159,6 +161,7 @@ export function SiteHeader({ className = '' }: { className?: string }) {
               })}
 
               <div className="mt-2 flex items-center justify-between gap-3 border-t border-slate-200 py-3">
+                {user ? <CurrencySelector /> : null}
                 <LanguageSelector />
                 {user ? <LogoutButton /> : null}
               </div>
