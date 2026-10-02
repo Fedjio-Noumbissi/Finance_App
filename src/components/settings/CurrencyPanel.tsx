@@ -123,15 +123,14 @@ export function CurrencyPanel() {
     )
   })
 
-  // Exemple de conversion sur la devise courante, pour rendre le taux lisible
+  // Exemple de conversion : 100 unites de la devise de reference valent
+  // combien dans la devise d'affichage. Les taux sont exprimes en XOF, donc
+  //   montant_base = montant * tauxVersXof(source)
+  //   montant_cible = montant_base / tauxVersXof(cible)
   const apercu = data
-    ? (() => {
-        const cible = data.currencies.find(
-          (currency) => currency.code === devise,
-        )
-        return cible?.tauxVersXof ?? 1
-      })()
-    : 1
+    ? (100 * (data.taux[data.deviseParDefaut] ?? 1)) /
+      (data.taux[devise] ?? 1)
+    : 100
 
   return (
     <div className="flex flex-col gap-4">
@@ -176,10 +175,7 @@ export function CurrencyPanel() {
             montant: '100',
             devise: data?.deviseParDefaut ?? DEVISE_BASE,
             resultat: formatTaux(
-              roundCurrency(
-                (100 * apercu) / (data?.taux[devise] ?? 1),
-                devise,
-              ),
+              roundCurrency(apercu, devise),
             ),
             deviseCible: devise,
           })}
