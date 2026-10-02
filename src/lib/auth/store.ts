@@ -1,5 +1,7 @@
 import type { User as FirebaseUser } from 'firebase/auth'
 
+import type { UserRole } from '#/lib/db/schema'
+
 import { SessionNotReadyError } from '#/lib/errors'
 
 export type AuthStatus =
@@ -13,6 +15,7 @@ export interface AppProfile {
   email: string
   languePreferee: string
   onboardingTerminee: boolean
+  role: UserRole
 }
 
 export interface AuthState {

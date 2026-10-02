@@ -36,6 +36,13 @@
       "when": 1790947200000,
       "tag": "0004_multi_currency",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1790954400000,
+      "tag": "0005_admin_dashboard",
+      "breakpoints": true
     }
   ]
 }

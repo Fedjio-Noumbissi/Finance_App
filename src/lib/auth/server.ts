@@ -3,7 +3,7 @@ import { eq, or } from 'drizzle-orm'
 
 import { i18n, isSupportedLanguage, type Language } from '#/i18n'
 import { db } from '#/lib/db'
-import { users } from '#/lib/db/schema'
+import { users, type UserRole } from '#/lib/db/schema'
 
 import { requireUserId } from '#/lib/auth/session'
 
@@ -14,6 +14,7 @@ export interface SyncedProfile {
   email: string
   languePreferee: string
   onboardingTerminee: boolean
+  role: UserRole
 }
 
 const profileColumns = {
@@ -21,6 +22,7 @@ const profileColumns = {
   email: users.email,
   languePreferee: users.languePreferee,
   onboardingTerminee: users.onboardingTerminee,
+  role: users.role,
 }
 
 async function verifyIdToken(idToken: string) {

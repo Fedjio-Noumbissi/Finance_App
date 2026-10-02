@@ -17,6 +17,8 @@ export const transactionTypeEnum = pgEnum('transaction_type', [
   'depense',
 ])
 
+export const userRoleEnum = pgEnum('user_role', ['user', 'admin'])
+
 export const currencies = pgTable('currencies', {
   code: text('code').primaryKey(),
   nomFr: text('nom_fr').notNull(),
@@ -39,8 +41,31 @@ export const users = pgTable('users', {
     .default('XOF')
     .references(() => currencies.code, { onDelete: 'restrict' }),
   onboardingTerminee: boolean('onboarding_terminee').notNull().default(false),
+  role: userRoleEnum('role').notNull().default('user'),
+  derniereActivite: timestamp({ withTimezone: true }),
   dateCreation: timestamp({ withTimezone: true }).notNull().defaultNow(),
 })
+
+/**
+ * Trafic du site, mesure en interne et sans cookie : on ne stocke ni adresse IP
+ * ni identifiant persistant pour les visiteurs anonymes, seulement la page vue
+ * et l'utilisateur connecte s'il y en a un.
+ */
+export const pageViews = pgTable(
+  'page_views',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    userId: uuid().references(() => users.id, { onDelete: 'set null' }),
+    chemin: text('chemin').notNull(),
+    source: text('source'),
+    dateCreation: timestamp({ withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index('page_views_date_creation_idx').on(table.dateCreation),
+    index('page_views_chemin_idx').on(table.chemin),
+    index('page_views_user_id_idx').on(table.userId),
+  ],
+)
 
 export const categories = pgTable(
   'categories',
@@ -93,6 +118,7 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   }),
   categories: many(categories),
   transactions: many(transactions),
+  pageViews: many(pageViews),
 }))
 
 export const categoriesRelations = relations(categories, ({ one, many }) => ({
@@ -119,6 +145,8 @@ export const transactionsRelations = relations(transactions, ({ one }) => ({
 }))
 
 export type Currency = typeof currencies.$inferSelect
+export type UserRole = (typeof userRoleEnum.enumValues)[number]
+export type PageView = typeof pageViews.$inferSelect
 export type User = typeof users.$inferSelect
 export type NewUser = typeof users.$inferInsert
 export type Category = typeof categories.$inferSelect
