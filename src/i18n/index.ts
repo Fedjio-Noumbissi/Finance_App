@@ -55,7 +55,11 @@ void i18n.use(initReactI18next).init({
   lng: readStoredLanguage() ?? DEFAULT_LANGUAGE,
   fallbackLng: DEFAULT_LANGUAGE,
   supportedLngs: [...SUPPORTED_LANGUAGES],
-  interpolation: { escapeValue: false },
+  interpolation: {
+    escapeValue: false,
+    prefix: '{',
+    suffix: '}',
+  },
   react: { useSuspense: false },
 })
 

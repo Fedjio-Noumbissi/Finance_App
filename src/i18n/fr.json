@@ -119,7 +119,9 @@
       "saving": "Enregistrement…",
       "cancel": "Annuler",
       "fixErrors": "Veuillez corriger les champs en rouge.",
-      "error": "Enregistrement impossible."
+      "error": "Enregistrement impossible.",
+      "devise": "Devise",
+      "deviseHint": "Saisie en {devise} — 100 {devise} ≈ {exemple}"
     },
     "filters": {
       "categorie": "Catégorie",
@@ -146,7 +148,8 @@
       "confirmDelete": "Confirmer",
       "sessionExpired": "Session expirée, veuillez vous reconnecter.",
       "emptyHint": "Ajoutez votre première transaction ou élargissez la période sélectionnée.",
-      "emptyAction": "Ajouter une transaction"
+      "emptyAction": "Ajouter une transaction",
+      "originalAmount": "Montant saisi dans la devise d'origine"
     }
   },
   "validation": {
@@ -217,6 +220,25 @@
       "createError": "Impossible d'ajouter la catégorie.",
       "renameError": "Impossible de renommer la catégorie.",
       "deleteError": "Impossible de supprimer la catégorie."
+    },
+    "currency": {
+      "title": "Devise",
+      "description": "Choisissez la devise d'affichage et ajustez les taux de conversion.",
+      "display": "Devise d'affichage",
+      "displayHint": "Tous les montants du tableau de bord, des transactions et des statistiques sont convertis et affichés dans cette devise.",
+      "active": "Active",
+      "search": "Rechercher une devise",
+      "searchPlaceholder": "Code ou nom (euro, USD, yen…)",
+      "ratesHint": "1 unité de la devise = valeur affichée en francs CFA (XOF). Mettez à jour un taux après chaque fluctuation importante.",
+      "rateFor": "Taux de {devise}",
+      "perUnit": "FCFA pour 1 {devise}",
+      "save": "Enregistrer",
+      "saveError": "Impossible d'enregistrer le taux.",
+      "loadError": "Impossible de charger les devises.",
+      "noResult": "Aucune devise ne correspond.",
+      "noDecimals": "Cette devise n'utilise pas les centimes.",
+      "preview": "Exemple : 100 {devise} valent environ {resultat} {deviseCible}.",
+      "updatedAt": "Taux mis à jour le {date}."
     }
   },
   "notFound": {
@@ -293,32 +315,6 @@
     "home.heroStat1Label": "Devises",
     "home.feature6Title": "Multi-devises",
     "home.feature6Body": "Vos transactions sont saisies dans la devise de votre choix puis converties partout : tableau de bord, statistiques et listes affichent le même montant."
-  },
-  "settings.currency": {
-    "title": "Devise",
-    "description": "Choisissez la devise d'affichage et ajustez les taux de conversion.",
-    "display": "Devise d'affichage",
-    "displayHint": "Tous les montants du tableau de bord, des transactions et des statistiques sont convertis et affichés dans cette devise.",
-    "active": "Active",
-    "search": "Rechercher une devise",
-    "searchPlaceholder": "Code ou nom (euro, USD, yen…)",
-    "ratesHint": "1 unité de la devise = valeur affichée en francs CFA (XOF). Mettez à jour un taux après chaque fluctuation importante.",
-    "rateFor": "Taux de {devise}",
-    "perUnit": "FCFA pour 1 {devise}",
-    "save": "Enregistrer",
-    "saveError": "Impossible d'enregistrer le taux.",
-    "loadError": "Impossible de charger les devises.",
-    "noResult": "Aucune devise ne correspond.",
-    "noDecimals": "Cette devise n'utilise pas les centimes.",
-    "preview": "Exemple : 100 {devise} valent environ {resultat} {deviseCible}.",
-    "updatedAt": "Taux mis à jour le {date}."
-  },
-  "transaction.form": {
-    "devise": "Devise",
-    "deviseHint": "Saisie en {devise} — 100 {devise} ≈ {exemple}"
-  },
-  "transaction.table": {
-    "originalAmount": "Montant saisi dans la devise d'origine"
   },
   "admin": {
     "badge": "Espace administrateur",

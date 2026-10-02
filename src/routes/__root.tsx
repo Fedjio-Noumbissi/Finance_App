@@ -3,6 +3,9 @@ import { useEffect } from 'react'
 import { TrafficTracker } from '#/components/admin/TrafficTracker'
 import { NotFound } from '#/components/layout/NotFound'
 import { AuthProvider } from '#/lib/auth/context'
+import { DEFAULT_LANGUAGE } from '#/i18n'
+
+import { useTranslation } from 'react-i18next'
 
 import { HeadContent, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
 import { TanStackDevtools } from '@tanstack/react-devtools'
@@ -49,9 +52,15 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 })
 
 function AppReady() {
+  const { i18n } = useTranslation()
+
   useEffect(() => {
     document.getElementById('app-loading')?.remove()
   }, [])
+
+  useEffect(() => {
+    document.documentElement.lang = i18n.resolvedLanguage ?? DEFAULT_LANGUAGE
+  }, [i18n.resolvedLanguage])
 
   return null
 }

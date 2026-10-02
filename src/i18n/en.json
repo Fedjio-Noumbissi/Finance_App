@@ -119,7 +119,9 @@
       "saving": "Saving…",
       "cancel": "Cancel",
       "fixErrors": "Please fix the highlighted fields.",
-      "error": "Could not save."
+      "error": "Could not save.",
+      "devise": "Currency",
+      "deviseHint": "Entered in {devise} — 100 {devise} ≈ {exemple}"
     },
     "filters": {
       "categorie": "Category",
@@ -146,7 +148,8 @@
       "confirmDelete": "Confirm",
       "sessionExpired": "Session expired, please log in again.",
       "emptyHint": "Add your first transaction or widen the selected period.",
-      "emptyAction": "Add a transaction"
+      "emptyAction": "Add a transaction",
+      "originalAmount": "Amount entered in the original currency"
     }
   },
   "validation": {
@@ -217,6 +220,25 @@
       "createError": "Could not add the category.",
       "renameError": "Could not rename the category.",
       "deleteError": "Could not delete the category."
+    },
+    "currency": {
+      "title": "Currency",
+      "description": "Choose your display currency and adjust the conversion rates.",
+      "display": "Display currency",
+      "displayHint": "Every amount on the dashboard, in transactions and statistics is converted and shown in this currency.",
+      "active": "Active",
+      "search": "Search a currency",
+      "searchPlaceholder": "Code or name (euro, USD, yen…)",
+      "ratesHint": "1 unit of the currency equals the value shown in CFA francs (XOF). Update a rate after any significant move.",
+      "rateFor": "{devise} rate",
+      "perUnit": "XOF for 1 {devise}",
+      "save": "Save",
+      "saveError": "Could not save the rate.",
+      "loadError": "Could not load the currencies.",
+      "noResult": "No currency matches your search.",
+      "noDecimals": "This currency does not use cents.",
+      "preview": "Example: 100 {devise} is about {resultat} {deviseCible}.",
+      "updatedAt": "Rate updated on {date}."
     }
   },
   "notFound": {
@@ -293,32 +315,6 @@
     "home.heroStat1Label": "Currencies",
     "home.feature6Title": "Multi-currency",
     "home.feature6Body": "Transactions are entered in the currency you choose and converted everywhere: dashboard, statistics and lists all show the same amount."
-  },
-  "settings.currency": {
-    "title": "Currency",
-    "description": "Choose your display currency and adjust the conversion rates.",
-    "display": "Display currency",
-    "displayHint": "Every amount on the dashboard, in transactions and statistics is converted and shown in this currency.",
-    "active": "Active",
-    "search": "Search a currency",
-    "searchPlaceholder": "Code or name (euro, USD, yen…)",
-    "ratesHint": "1 unit of the currency equals the value shown in CFA francs (XOF). Update a rate after any significant move.",
-    "rateFor": "{devise} rate",
-    "perUnit": "XOF for 1 {devise}",
-    "save": "Save",
-    "saveError": "Could not save the rate.",
-    "loadError": "Could not load the currencies.",
-    "noResult": "No currency matches your search.",
-    "noDecimals": "This currency does not use cents.",
-    "preview": "Example: 100 {devise} is about {resultat} {deviseCible}.",
-    "updatedAt": "Rate updated on {date}."
-  },
-  "transaction.form": {
-    "devise": "Currency",
-    "deviseHint": "Entered in {devise} — 100 {devise} ≈ {exemple}"
-  },
-  "transaction.table": {
-    "originalAmount": "Amount entered in the original currency"
   },
   "admin": {
     "badge": "Admin area",
