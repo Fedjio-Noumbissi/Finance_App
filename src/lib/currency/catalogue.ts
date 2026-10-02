@@ -23,7 +23,7 @@ export const DEVISE_BASE = 'XOF'
 
 export const CURRENCIES: CurrencyDefinition[] = [
   // Afrique de l'Ouest et centrale (zone CFA)
-  { code: 'XOF', nomFr: 'Franc CFA (BCEAO)', nomEn: 'CFA franc (BCEAO)', decimales: 2, tauxVersXof: 1 },
+  { code: 'XOF', nomFr: 'Franc CFA (BCEAO)', nomEn: 'CFA franc (BCEAO)', decimales: 0, tauxVersXof: 1 },
   { code: 'XAF', nomFr: 'Franc CFA (BEAC)', nomEn: 'CFA franc (BEAC)', decimales: 0, tauxVersXof: 1 },
   { code: 'GHS', nomFr: 'Cedi ghanéen', nomEn: 'Ghanaian cedi', decimales: 2, tauxVersXof: 50 },
   { code: 'NGN', nomFr: 'Naira nigérian', nomEn: 'Nigerian naira', decimales: 2, tauxVersXof: 0.4 },

@@ -7,13 +7,13 @@ import { db } from '#/lib/db'
 import { categories, pageViews, transactions, users } from '#/lib/db/schema'
 import type { UserRole } from '#/lib/db/schema'
 
+import { requireAdminId } from './guards'
 import {
   dayKey,
   isValidPath,
-  requireAdminId,
   sanitizeSource,
   startOfWindow,
-} from './guards'
+} from './utils'
 
 export interface AdminKpis {
   utilisateurs: number

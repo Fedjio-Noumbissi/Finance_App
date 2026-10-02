@@ -31,7 +31,7 @@ export function extractErrorMessage(error: unknown, fallback: string): string {
           ? String((parsed as { message: unknown }).message)
           : ''
 
-      if (candidate) return candidate
+      return candidate || fallback
     } catch {
       return fallback
     }
