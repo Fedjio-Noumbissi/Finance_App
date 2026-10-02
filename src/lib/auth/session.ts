@@ -35,9 +35,14 @@ export async function closeAppSession(): Promise<void> {
   await session.clear()
 }
 
-export async function requireUserId(): Promise<string> {
+/** Identifiant de session, ou `null` pour un visiteur non connecte. */
+export async function getSessionUserId(): Promise<string | null> {
   const session = await useSession<AppSessionData>(getSessionConfig())
-  const userId = session.data.userId
+  return session.data.userId ?? null
+}
+
+export async function requireUserId(): Promise<string> {
+  const userId = await getSessionUserId()
 
   if (!userId) {
     throw new UnauthorizedError(i18n.t('transaction.table.sessionExpired'))

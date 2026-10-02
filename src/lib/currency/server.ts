@@ -13,7 +13,7 @@ import {
   isSupportedCurrency,
   type TauxMap,
 } from './catalogue'
-import { requireUserCurrency } from './guards'
+import { loadUserCurrency } from './guards'
 
 export interface CurrencyRow {
   code: string
@@ -34,7 +34,9 @@ export interface CurrencyList {
 
 export const listCurrencies = createServerFn({ method: 'GET' }).handler(
   async (): Promise<CurrencyList> => {
-    const { devise, taux } = await requireUserCurrency()
+    // La liste des devises alimente aussi l'en-tete des pages publiques :
+    // aucune session n'est requise, la devise de base sert alors de defaut.
+    const { devise, taux } = await loadUserCurrency()
 
     const rows = await db
       .select({

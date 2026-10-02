@@ -12,6 +12,31 @@ export type Language = (typeof SUPPORTED_LANGUAGES)[number]
 
 export const LANGUAGE_STORAGE_KEY = 'finance.langue'
 
+/**
+ * La langue est aussi stockee dans un cookie : le serveur ne peut pas lire
+ * localStorage, et un rendu serveur en francais face a un client en anglais
+ * provoque une erreur d'hydratation.
+ */
+export const LANGUAGE_COOKIE = 'finance_langue'
+
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 365
+
+function readCookie(name: string): string | null {
+  if (typeof document === 'undefined') {
+    return null
+  }
+
+  for (const part of document.cookie.split(';')) {
+    const [cle, ...reste] = part.trim().split('=')
+
+    if (cle === name) {
+      return decodeURIComponent(reste.join('='))
+    }
+  }
+
+  return null
+}
+
 const resources = {
   fr: { translation: fr },
   en: { translation: en },
@@ -24,24 +49,28 @@ export function isSupportedLanguage(value: unknown): value is Language {
   )
 }
 
-function readStoredLanguage(): Language | null {
-  if (typeof window === 'undefined') {
-    return null
+/**
+ * Langue utilisee pour le premier rendu, cote serveur comme cote client.
+ *
+ * Le cookie est la seule source partagee : le serveur lui rend la meme valeur
+ * que le client, donc les deux rendus produits exactement le meme texte.
+ */
+export function readInitialLanguage(): Language | null {
+  const cookie = readCookie(LANGUAGE_COOKIE)
+
+  if (isSupportedLanguage(cookie)) {
+    return cookie
   }
 
-  try {
-    const stored = window.localStorage.getItem(LANGUAGE_STORAGE_KEY)
-
-    return isSupportedLanguage(stored) ? stored : null
-  } catch {
-    return null
-  }
+  return null
 }
 
 export function storeLanguage(language: Language): void {
   if (typeof window === 'undefined') {
     return
   }
+
+  document.cookie = `${LANGUAGE_COOKIE}=${encodeURIComponent(language)}; path=/; max-age=${COOKIE_MAX_AGE}; samesite=lax`
 
   try {
     window.localStorage.setItem(LANGUAGE_STORAGE_KEY, language)
@@ -52,7 +81,7 @@ export function storeLanguage(language: Language): void {
 
 void i18n.use(initReactI18next).init({
   resources,
-  lng: readStoredLanguage() ?? DEFAULT_LANGUAGE,
+  lng: readInitialLanguage() ?? DEFAULT_LANGUAGE,
   fallbackLng: DEFAULT_LANGUAGE,
   supportedLngs: [...SUPPORTED_LANGUAGES],
   interpolation: {

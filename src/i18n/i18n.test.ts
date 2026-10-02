@@ -6,7 +6,13 @@ import { describe, expect, it } from 'vitest'
 
 import fr from './fr.json'
 import en from './en.json'
-import { i18n } from './index'
+import {
+  DEFAULT_LANGUAGE,
+  i18n,
+  LANGUAGE_COOKIE,
+  readInitialLanguage,
+  storeLanguage,
+} from './index'
 
 type Langue = Record<string, unknown>
 
@@ -148,5 +154,72 @@ describe('configuration i18next', () => {
     expect(message).toContain('100 XOF')
     expect(message).toContain('0,17 USD')
     expect(message).not.toContain('{')
+  })
+})
+describe('langue partagee entre le serveur et le client', () => {
+  /**
+   * Le serveur ne lit pas localStorage : il ne peut donc reproduire la langue
+   * du premier rendu que si elle est aussi portee par un cookie. Ces tests
+   * verrouillent ce contrat, dont depend l'absence d'erreur d'hydratation.
+   */
+  function avecCookie(valeur: string) {
+    const cibles = globalThis as unknown as { document?: unknown; window?: unknown }
+
+    cibles.document = { cookie: valeur }
+    cibles.window = {
+      localStorage: {
+        store: new Map<string, string>(),
+        getItem(this: Map<string, string>, key: string) {
+          return this.get(key) ?? null
+        },
+        setItem(this: Map<string, string>, key: string, entry: string) {
+          this.set(key, entry)
+        },
+      },
+    }
+
+    return () => {
+      delete cibles.document
+      delete cibles.window
+    }
+  }
+
+  it('ecrit la langue dans le cookie lu par le serveur', () => {
+    const restaurer = avecCookie('')
+
+    try {
+      storeLanguage('en')
+
+      const documentCourant = globalThis as unknown as { document: { cookie: string } }
+
+      expect(documentCourant.document.cookie).toContain(`${LANGUAGE_COOKIE}=en`)
+      expect(readInitialLanguage()).toBe('en')
+    } finally {
+      restaurer()
+    }
+  })
+
+  it('lit la langue du cookie et non celle du stockage local', () => {
+    const restaurer = avecCookie(`${LANGUAGE_COOKIE}=en`)
+
+    try {
+      expect(readInitialLanguage()).toBe('en')
+    } finally {
+      restaurer()
+    }
+  })
+
+  it('retombe sur la langue par defaut si le cookie est absent ou invalide', () => {
+    for (const cookie of ['', 'autre=1', `${LANGUAGE_COOKIE}=de`, `${LANGUAGE_COOKIE}=`]) {
+      const restaurer = avecCookie(cookie)
+
+      try {
+        expect(readInitialLanguage()).toBeNull()
+      } finally {
+        restaurer()
+      }
+    }
+
+    expect(DEFAULT_LANGUAGE).toBe('fr')
   })
 })

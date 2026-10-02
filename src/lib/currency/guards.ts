@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm'
 
-import { requireUserId } from '#/lib/auth/session'
+import { getSessionUserId, requireUserId } from '#/lib/auth/session'
 import { db } from '#/lib/db'
 import { currencies, users } from '#/lib/db/schema'
 
@@ -29,6 +29,35 @@ export async function loadTaux(): Promise<TauxMap> {
   }
 
   return buildTauxMap(overrides)
+}
+
+/**
+ * Devise d'affichage sans exiger de session : les pages publiques ont besoin
+ * du catalogue des devises, un visiteur non connecte simplye l'utilise avec la
+ * devise de base.
+ */
+export async function loadUserCurrency(): Promise<{
+  userId: string | null
+  devise: string
+  taux: TauxMap
+}> {
+  const userId = await getSessionUserId()
+
+  if (!userId) {
+    return { userId: null, devise: DEVISE_BASE, taux: await loadTaux() }
+  }
+
+  const [user] = await db
+    .select({ devisePreferee: users.devisePreferee })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1)
+
+  return {
+    userId,
+    devise: user?.devisePreferee ?? DEVISE_BASE,
+    taux: await loadTaux(),
+  }
 }
 
 export async function requireUserCurrency(): Promise<{

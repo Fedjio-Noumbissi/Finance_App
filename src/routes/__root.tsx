@@ -3,11 +3,14 @@ import { useEffect } from 'react'
 import { TrafficTracker } from '#/components/admin/TrafficTracker'
 import { NotFound } from '#/components/layout/NotFound'
 import { AuthProvider } from '#/lib/auth/context'
+import { DeviseProvider } from '#/lib/currency/store'
 import { DEFAULT_LANGUAGE } from '#/i18n'
+import { lireLangueCookie } from '#/lib/i18n/cookieServeur'
 
 import { useTranslation } from 'react-i18next'
 
 import { HeadContent, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
+import { i18n } from '#/i18n'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 
@@ -21,7 +24,25 @@ interface MyRouterContext {
   queryClient: QueryClient
 }
 
+/**
+ * Aligne la langue du rendu serveur sur celle du client avant le premier
+ * rendu de la page : sans cela le HTML arrive en francais alors que le client
+ * se recharge en anglais, et React signale une erreur d'hydratation.
+ */
+async function synchroniserLangueServeur() {
+  if (typeof window !== 'undefined') {
+    return
+  }
+
+  const langue = await lireLangueCookie()
+
+  if (langue && langue !== i18n.resolvedLanguage) {
+    await i18n.changeLanguage(langue)
+  }
+}
+
 export const Route = createRootRouteWithContext<MyRouterContext>()({
+  beforeLoad: () => synchroniserLangueServeur(),
   head: () => ({
     meta: [
       {
@@ -87,9 +108,13 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         </div>
 
         <AuthProvider>
-          <TrafficTracker />
-          {children}
-          <AppReady />
+          {/* Le selecteur de devise vit dans l'en-tete, utilisee aussi par les
+              pages publiques : le provider doit donc englober toute l'app. */}
+          <DeviseProvider>
+            <TrafficTracker />
+            {children}
+            <AppReady />
+          </DeviseProvider>
         </AuthProvider>
         <TanStackDevtools
           config={{

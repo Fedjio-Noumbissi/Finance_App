@@ -2,7 +2,6 @@ import { Outlet, createFileRoute } from '@tanstack/react-router'
 
 import { AppSidebar } from '#/components/layout/AppSidebar'
 import { SiteHeader } from '#/components/layout/SiteHeader'
-import { DeviseProvider } from '#/lib/currency/store'
 import { OnboardingFlow } from '#/components/onboarding/OnboardingFlow'
 import { QuickAddFab } from '#/components/transactions/QuickAddFab'
 import { requireAuth } from '#/lib/auth/guard'
@@ -17,18 +16,14 @@ export const Route = createFileRoute('/_protected')({
 
 function ProtectedLayout() {
   return (
-    // Le provider englobe la barre laterale et l'entete : le selecteur de
-    // devise de l'enetre lit la meme source que les pages.
-    <DeviseProvider>
-      <div className="min-h-screen bg-slate-50">
-        <AppSidebar />
-        <div className="lg:pl-60">
-          <SiteHeader className="lg:hidden" />
-          <Outlet />
-        </div>
-        <QuickAddFab />
-        <OnboardingFlow />
+    <div className="min-h-screen bg-slate-50">
+      <AppSidebar />
+      <div className="lg:pl-60">
+        <SiteHeader className="lg:hidden" />
+        <Outlet />
       </div>
-    </DeviseProvider>
+      <QuickAddFab />
+      <OnboardingFlow />
+    </div>
   )
 }
