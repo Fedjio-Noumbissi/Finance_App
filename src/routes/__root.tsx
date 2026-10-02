@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 
+import { TrafficTracker } from '#/components/admin/TrafficTracker'
 import { NotFound } from '#/components/layout/NotFound'
 import { AuthProvider } from '#/lib/auth/context'
 
@@ -77,6 +78,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         </div>
 
         <AuthProvider>
+          <TrafficTracker />
           {children}
           <AppReady />
         </AuthProvider>

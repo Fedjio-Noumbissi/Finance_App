@@ -1,25 +1,34 @@
 import { Link, useRouterState } from '@tanstack/react-router'
+import {
+  ArrowLeftRight,
+  ChartPie,
+  LayoutDashboard,
+  Settings,
+  ShieldCheck,
+  type LucideIcon,
+} from 'lucide-react'
 
 import { useTranslation } from 'react-i18next'
 import { LogoutButton } from '#/components/auth/LogoutButton'
 import { LanguageSelector } from '#/components/layout/LanguageSelector'
 import { useAuth } from '#/lib/auth/context'
 
-const ICONS: Record<string, string> = {
-  '/dashboard': '▤',
-  '/transactions': '⇄',
-  '/statistics': '◔',
-  '/settings': '⚙',
+const ICONS: Record<string, LucideIcon> = {
+  '/dashboard': LayoutDashboard,
+  '/transactions': ArrowLeftRight,
+  '/statistics': ChartPie,
+  '/settings': Settings,
+  '/admin': ShieldCheck,
 }
 
 export function AppSidebar() {
   const { t } = useTranslation()
-  const { user } = useAuth()
+  const { user, profile } = useAuth()
   const pathname = useRouterState({
     select: (state) => state.location.pathname,
   })
 
-  const links = user
+  const liens = user
     ? [
         { to: '/dashboard', label: t('nav.dashboard') },
         { to: '/transactions', label: t('nav.transactions') },
@@ -30,6 +39,13 @@ export function AppSidebar() {
         { to: '/login', label: t('nav.login') },
         { to: '/signup', label: t('nav.signup') },
       ]
+
+  const liensAdmin =
+    profile?.role === 'admin'
+      ? [{ to: '/admin', label: t('nav.admin') }]
+      : []
+
+  const links = [...liens, ...liensAdmin]
 
   return (
     <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 flex-col border-r border-slate-200 bg-white lg:flex">
@@ -45,6 +61,7 @@ export function AppSidebar() {
       <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-3">
         {links.map((link) => {
           const active = pathname === link.to
+          const Icone = ICONS[link.to]
 
           return (
             <Link
@@ -57,14 +74,15 @@ export function AppSidebar() {
                   : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
               }`}
             >
-              <span
-                aria-hidden
-                className={`w-4 text-center text-sm ${
-                  active ? 'text-white' : 'text-slate-400'
-                }`}
-              >
-                {ICONS[link.to] ?? '•'}
-              </span>
+              {Icone ? (
+                <Icone
+                  aria-hidden
+                  className={`size-4 shrink-0 ${
+                    active ? 'text-white' : 'text-slate-400'
+                  }`}
+                  strokeWidth={2}
+                />
+              ) : null}
               {link.label}
             </Link>
           )

@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProtectedRouteImport } from './routes/_protected'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as ProtectedAdminRouteImport } from './routes/_protected/admin'
 import { Route as ProtectedDashboardRouteImport } from './routes/_protected/dashboard'
 import { Route as ProtectedSettingsRouteImport } from './routes/_protected/settings'
 import { Route as ProtectedStatisticsRouteImport } from './routes/_protected/statistics'
@@ -36,6 +37,11 @@ const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ProtectedAdminRoute = ProtectedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => ProtectedRoute,
 } as any)
 const ProtectedDashboardRoute = ProtectedDashboardRouteImport.update({
   id: '/dashboard',
@@ -62,6 +68,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/admin': typeof ProtectedAdminRoute
   '/dashboard': typeof ProtectedDashboardRoute
   '/settings': typeof ProtectedSettingsRoute
   '/statistics': typeof ProtectedStatisticsRoute
@@ -71,6 +78,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/admin': typeof ProtectedAdminRoute
   '/dashboard': typeof ProtectedDashboardRoute
   '/settings': typeof ProtectedSettingsRoute
   '/statistics': typeof ProtectedStatisticsRoute
@@ -82,6 +90,7 @@ export interface FileRoutesById {
   '/_protected': typeof ProtectedRouteWithChildren
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/_protected/admin': typeof ProtectedAdminRoute
   '/_protected/dashboard': typeof ProtectedDashboardRoute
   '/_protected/settings': typeof ProtectedSettingsRoute
   '/_protected/statistics': typeof ProtectedStatisticsRoute
@@ -93,6 +102,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/signup'
+    | '/admin'
     | '/dashboard'
     | '/settings'
     | '/statistics'
@@ -102,6 +112,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/signup'
+    | '/admin'
     | '/dashboard'
     | '/settings'
     | '/statistics'
@@ -112,6 +123,7 @@ export interface FileRouteTypes {
     | '/_protected'
     | '/login'
     | '/signup'
+    | '/_protected/admin'
     | '/_protected/dashboard'
     | '/_protected/settings'
     | '/_protected/statistics'
@@ -155,6 +167,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_protected/admin': {
+      id: '/_protected/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof ProtectedAdminRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
     '/_protected/dashboard': {
       id: '/_protected/dashboard'
       path: '/dashboard'
@@ -187,6 +206,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface ProtectedRouteChildren {
+  ProtectedAdminRoute: typeof ProtectedAdminRoute
   ProtectedDashboardRoute: typeof ProtectedDashboardRoute
   ProtectedSettingsRoute: typeof ProtectedSettingsRoute
   ProtectedStatisticsRoute: typeof ProtectedStatisticsRoute
@@ -194,6 +214,7 @@ interface ProtectedRouteChildren {
 }
 
 const ProtectedRouteChildren: ProtectedRouteChildren = {
+  ProtectedAdminRoute: ProtectedAdminRoute,
   ProtectedDashboardRoute: ProtectedDashboardRoute,
   ProtectedSettingsRoute: ProtectedSettingsRoute,
   ProtectedStatisticsRoute: ProtectedStatisticsRoute,
