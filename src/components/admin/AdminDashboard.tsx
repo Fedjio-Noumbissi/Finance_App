@@ -67,7 +67,7 @@ function KpiCard({ label, value, hint, tone, loading }: KpiCardProps) {
     <article
       className={`rounded-2xl bg-gradient-to-br p-5 text-white shadow-sm ${TONES[tone]}`}
     >
-      <p className="text-xs font-medium uppercase tracking-wide text-white/70">
+      <p className="text-sm font-semibold tracking-wide text-white/90">
         {label}
       </p>
       {loading ? (
@@ -75,7 +75,7 @@ function KpiCard({ label, value, hint, tone, loading }: KpiCardProps) {
       ) : (
         <p className="mt-2 text-3xl font-semibold tabular-nums">{value}</p>
       )}
-      {hint ? <p className="mt-1 text-xs text-white/70">{hint}</p> : null}
+      {hint ? <p className="mt-1 text-sm text-white/85">{hint}</p> : null}
     </article>
   )
 }
@@ -92,11 +92,11 @@ function SectionCard({
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-5">
       <header className="mb-4">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+        <h2 className="text-base font-semibold text-slate-900">
           {title}
         </h2>
         {subtitle ? (
-          <p className="mt-1 text-xs text-slate-500">{subtitle}</p>
+          <p className="mt-1 text-sm text-slate-600">{subtitle}</p>
         ) : null}
       </header>
       {children}
@@ -140,13 +140,13 @@ export function AdminDashboard({ adminId }: { adminId: string }) {
     <div className="mx-auto w-full max-w-6xl space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-600">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-700">
             {t('admin.badge')}
           </p>
           <h1 className="mt-1 text-2xl font-semibold text-slate-900">
             {t('admin.title')}
           </h1>
-          <p className="mt-1 text-sm text-slate-500">{t('admin.subtitle')}</p>
+          <p className="mt-1 text-sm text-slate-600">{t('admin.subtitle')}</p>
         </div>
 
         <div
@@ -233,14 +233,14 @@ export function AdminDashboard({ adminId }: { adminId: string }) {
                     <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                     <XAxis
                       dataKey="label"
-                      tick={{ fontSize: 12, fill: '#64748b' }}
+                      tick={{ fontSize: 12, fill: '#475569' }}
                       tickLine={false}
                       axisLine={{ stroke: '#e2e8f0' }}
                       minTickGap={18}
                     />
                     <YAxis
                       allowDecimals={false}
-                      tick={{ fontSize: 12, fill: '#64748b' }}
+                      tick={{ fontSize: 12, fill: '#475569' }}
                       tickLine={false}
                       axisLine={false}
                       width={32}
@@ -256,7 +256,7 @@ export function AdminDashboard({ adminId }: { adminId: string }) {
                       iconType="plainline"
                       iconSize={14}
                       formatter={(valeur: string) => (
-                        <span className="text-xs text-slate-600">{valeur}</span>
+                        <span className="text-sm text-slate-700">{valeur}</span>
                       )}
                     />
                     <Area
@@ -279,7 +279,7 @@ export function AdminDashboard({ adminId }: { adminId: string }) {
                 </ResponsiveContainer>
               </div>
             ) : (
-              <p className="py-20 text-center text-sm text-slate-500">
+              <p className="py-20 text-center text-sm text-slate-600">
                 {t('admin.trafficEmpty')}
               </p>
             )}
@@ -301,10 +301,10 @@ export function AdminDashboard({ adminId }: { adminId: string }) {
               {data.topChemins.map((chemin) => (
                 <li key={chemin.chemin} className="space-y-1">
                   <div className="flex items-baseline justify-between gap-2">
-                    <span className="truncate font-mono text-xs text-slate-700">
+                    <span className="truncate font-mono text-sm font-medium text-slate-700">
                       {chemin.chemin}
                     </span>
-                    <span className="shrink-0 text-xs font-medium tabular-nums text-slate-500">
+                    <span className="shrink-0 text-sm font-semibold tabular-nums text-slate-600">
                       {chemin.vues}
                     </span>
                   </div>
@@ -320,21 +320,21 @@ export function AdminDashboard({ adminId }: { adminId: string }) {
               ))}
             </ul>
           ) : (
-            <p className="py-10 text-center text-sm text-slate-500">
+            <p className="py-10 text-center text-sm text-slate-600">
               {t('admin.topPathsEmpty')}
             </p>
           )}
 
           {data && data.sources.length > 0 ? (
             <div className="mt-5 border-t border-slate-100 pt-4">
-              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <h3 className="mb-2 text-sm font-semibold text-slate-900">
                 {t('admin.sourcesTitle')}
               </h3>
               <div className="flex flex-wrap gap-2">
                 {data.sources.map((entree) => (
                   <span
                     key={entree.source}
-                    className="rounded-full bg-slate-100 px-2.5 py-1 text-xs text-slate-600"
+                    className="rounded-full bg-slate-100 px-2.5 py-1 text-sm text-slate-700"
                   >
                     {hostOf(entree.source)} · {entree.vues}
                   </span>
@@ -367,13 +367,13 @@ export function AdminDashboard({ adminId }: { adminId: string }) {
                     <p className="truncate text-sm font-medium text-slate-900">
                       {utilisateur.email}
                     </p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-sm text-slate-600">
                       {formatDateTime(utilisateur.dateCreation, locale)} ·{' '}
                       {utilisateur.transactions} {t('admin.transactionsLabel')}
                     </p>
                   </div>
                   {utilisateur.role === 'admin' ? (
-                    <span className="shrink-0 rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700">
+                    <span className="shrink-0 rounded-full bg-indigo-50 px-2 py-0.5 text-sm font-medium text-indigo-700">
                       {t('admin.roleAdmin')}
                     </span>
                   ) : null}
@@ -381,7 +381,7 @@ export function AdminDashboard({ adminId }: { adminId: string }) {
               ))}
             </ul>
           ) : (
-            <p className="py-10 text-center text-sm text-slate-500">
+            <p className="py-10 text-center text-sm text-slate-600">
               {t('admin.newUsersEmpty')}
             </p>
           )}
@@ -403,7 +403,7 @@ export function AdminDashboard({ adminId }: { adminId: string }) {
                 aria-label={t('admin.searchPlaceholder')}
                 className="w-full max-w-xs rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10"
               />
-              <span className="text-xs text-slate-500">
+              <span className="text-sm text-slate-600">
                 {t('admin.total', { total })}
               </span>
             </div>
@@ -417,7 +417,7 @@ export function AdminDashboard({ adminId }: { adminId: string }) {
             <div className="-mx-1 overflow-x-auto">
               <table className="w-full min-w-[42rem] text-left text-sm">
                 <thead>
-                  <tr className="border-b border-slate-200 text-xs uppercase tracking-wide text-slate-500">
+                  <tr className="border-b border-slate-200 text-sm font-semibold text-slate-700">
                     <th className="px-2 py-2 font-medium">{t('admin.columnUser')}</th>
                     <th className="px-2 py-2 font-medium">{t('admin.columnActivity')}</th>
                     <th className="px-2 py-2 font-medium">{t('admin.columnContent')}</th>
@@ -434,20 +434,20 @@ export function AdminDashboard({ adminId }: { adminId: string }) {
                         <p className="font-medium text-slate-900">
                           {utilisateur.email}
                         </p>
-                        <p className="text-xs text-slate-500">
+                        <p className="text-sm text-slate-600">
                           {utilisateur.languePreferee.toUpperCase()} ·{' '}
                           {utilisateur.devisePreferee}
                           {utilisateur.onboardingTerminee ? '' : ` · ${t('admin.onboardingTodo')}`}
                         </p>
                       </td>
-                      <td className="px-2 py-2.5 text-xs text-slate-600">
+                      <td className="px-2 py-2.5 text-sm text-slate-700">
                         {formatDateTime(utilisateur.derniereActivite, locale)}
                       </td>
-                      <td className="px-2 py-2.5 text-xs text-slate-600">
+                      <td className="px-2 py-2.5 text-sm text-slate-700">
                         {utilisateur.transactions} {t('admin.transactionsLabel')} ·{' '}
                         {utilisateur.categories} {t('admin.categoriesLabel')}
                       </td>
-                      <td className="px-2 py-2.5 text-xs text-slate-600">
+                      <td className="px-2 py-2.5 text-sm text-slate-700">
                         {formatDateTime(utilisateur.dateCreation, locale)}
                       </td>
                       <td className="px-2 py-2.5 text-right">
@@ -476,7 +476,7 @@ export function AdminDashboard({ adminId }: { adminId: string }) {
                                 },
                               )
                           }}
-                          className={`rounded-full px-2.5 py-1 text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                          className={`rounded-full px-2.5 py-1 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-60 ${
                             utilisateur.role === 'admin'
                               ? 'bg-indigo-600 text-white hover:bg-indigo-700'
                               : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -494,7 +494,7 @@ export function AdminDashboard({ adminId }: { adminId: string }) {
             </div>
 
             {!users.isPending && (users.data?.lignes.length ?? 0) === 0 ? (
-              <p className="py-8 text-center text-sm text-slate-500">
+              <p className="py-8 text-center text-sm text-slate-600">
                 {t('admin.searchEmpty')}
               </p>
             ) : null}
@@ -509,7 +509,7 @@ export function AdminDashboard({ adminId }: { adminId: string }) {
                 >
                   {t('admin.previous')}
                 </button>
-                <span className="text-xs text-slate-500">
+                <span className="text-sm text-slate-600">
                   {page} / {pages}
                 </span>
                 <button

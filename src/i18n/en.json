@@ -49,13 +49,7 @@
     "welcomeSubtitle": "Your transactions stay private.",
     "signupTitle": "Create your account",
     "signupSubtitle": "It takes less than a minute.",
-    "logoutError": "Could not sign you out. Please try again.",
-    "panelTitle": "Your money at a glance.",
-    "panelBalance": "Total balance",
-    "panelBalanceValue": "€ 1,240,500",
-    "panelFeatureCategories": "Categories and entries in 2 taps",
-    "panelFeatureStats": "Breakdowns and charts by month",
-    "panelFeatureCurrencies": "Every currency, conversions included"
+    "logoutError": "Could not sign you out. Please try again."
   },
   "authError": {
     "invalidEmail": "Invalid email address.",

@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 
+import { Languages } from 'lucide-react'
+
 import { useTranslation } from 'react-i18next'
 import { useLanguageState } from '#/lib/i18n/useLanguage'
 
@@ -13,16 +15,19 @@ export function LanguageSelector({ className = '' }: { className?: string }) {
   }, [])
 
   if (!mounted) {
-    return <div aria-hidden className={`h-7 w-24 ${className}`} />
+    return <div aria-hidden className={`h-8 w-16 ${className}`} />
   }
 
   return (
-    <label className={`flex items-center gap-1.5 ${className}`}>
+    <label
+      className={`flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2 py-1 transition hover:border-slate-300 ${className}`}
+      title={t('language.hint')}
+    >
+      <Languages aria-hidden className="size-4 shrink-0 text-slate-500" strokeWidth={1.9} />
       <span className="sr-only">{t('language.label')}</span>
       <select
         aria-label={t('language.label')}
-        title={t('language.hint')}
-        className="cursor-pointer rounded-md border border-slate-300 bg-white px-2 py-1 text-xs font-medium text-slate-700 transition hover:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/10"
+        className="cursor-pointer appearance-none bg-transparent pr-0.5 text-xs font-semibold uppercase tracking-wide text-slate-700 outline-none"
         value={language}
         onChange={(event) =>
           changeLanguage(event.target.value as typeof language)
@@ -30,7 +35,7 @@ export function LanguageSelector({ className = '' }: { className?: string }) {
       >
         {languages.map((code) => (
           <option key={code} value={code}>
-            {t(`language.${code}`)}
+            {code}
           </option>
         ))}
       </select>

@@ -49,13 +49,7 @@
     "welcomeSubtitle": "Vos transactions restent privées.",
     "signupTitle": "Créez votre compte",
     "signupSubtitle": "Cela prend moins d’une minute.",
-    "logoutError": "Impossible de vous déconnecter. Réessayez.",
-    "panelTitle": "Votre argent, en un coup d’œil.",
-    "panelBalance": "Solde total",
-    "panelBalanceValue": "1 240 500 F CFA",
-    "panelFeatureCategories": "Catégories et transactions en 2 gestes",
-    "panelFeatureStats": "Répartitions et courbes par mois",
-    "panelFeatureCurrencies": "Toutes les devises, conversions incluses"
+    "logoutError": "Impossible de vous déconnecter. Réessayez."
   },
   "authError": {
     "invalidEmail": "Adresse e-mail invalide.",
