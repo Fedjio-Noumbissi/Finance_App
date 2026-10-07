@@ -18,10 +18,12 @@ services:
     runtime: node
     plan: free
     autoDeploy: true
-    buildCommand: npm ci && npm run build
+    # preDeployCommand est reserve aux plans payants : les migrations
+    # drizzle sont donc appliquees en fin de build, avant la mise en service
+    # de la nouvelle version (un echec de build ou de migration arrete le
+    # deploiement et laisse l'ancienne version tourner).
+    buildCommand: npm ci --include=dev && npm run build && npm run db:migrate
     startCommand: npm start
-    # Applique les migrations drizzle automatiquement avant chaque mise en prod.
-    preDeployCommand: npm run db:migrate
     healthCheckPath: /login
     envVars:
       - key: NODE_VERSION
