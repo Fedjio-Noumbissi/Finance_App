@@ -19,10 +19,11 @@ services:
     plan: free
     autoDeploy: true
     # preDeployCommand est reserve aux plans payants : les migrations
-    # drizzle sont donc appliquees en fin de build, avant la mise en service
-    # de la nouvelle version (un echec de build ou de migration arrete le
-    # deploiement et laisse l'ancienne version tourner).
-    buildCommand: npm ci --include=dev && npm run build && npm run db:migrate
+    # drizzle et les categories par defaut sont donc appliquees en fin de
+    # build, avant la mise en service de la nouvelle version (un echec
+    # arrete le deploiement et laisse l'ancienne version tourner).
+    # db:seed est idempotent : il n'insere que les categories manquantes.
+    buildCommand: npm ci --include=dev && npm run build && npm run db:migrate && npm run db:seed
     startCommand: npm start
     healthCheckPath: /login
     envVars:
