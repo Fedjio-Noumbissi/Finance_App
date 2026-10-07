@@ -15,7 +15,14 @@ const globalForDb = globalThis as typeof globalThis & {
   __financeAppSql?: postgres.Sql
 }
 
-const client = globalForDb.__financeAppSql ?? postgres(connectionString)
+// Render, Supabase ou Neon exigent TLS : DATABASE_SSL=require l'active
+// (un `?sslmode=require` dans l'URL fonctionne deja de base).
+const client =
+  globalForDb.__financeAppSql ??
+  postgres(
+    connectionString,
+    process.env.DATABASE_SSL === 'require' ? { ssl: 'require' } : undefined,
+  )
 
 if (process.env.NODE_ENV !== 'production') {
   globalForDb.__financeAppSql = client

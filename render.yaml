@@ -1,0 +1,62 @@
+# Blueprint Render : base PostgreSQL + serveur Web Node.
+# Deploy : Render > New > Blueprint > connecter le depot GitHub, ou
+# Render > New > Web Service (laisser Build `npm ci && npm run build`,
+# Start `npm start`, Add PostgreSQL + coller les variables ci-dessous).
+
+databases:
+  - name: gestion-finance-db
+    databaseName: gestion_finance
+    user: gestion_finance
+    plan: free
+    postgresMajorVersion: 16
+    # Seules les services du meme compte Render peuvent se connecter.
+    ipAllowList: []
+
+services:
+  - type: web
+    name: gestion-finance
+    runtime: node
+    plan: free
+    autoDeploy: true
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    # Applique les migrations drizzle automatiquement avant chaque mise en prod.
+    preDeployCommand: npm run db:migrate
+    healthCheckPath: /login
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: gestion-finance-db
+          property: connectionString
+      - key: DATABASE_SSL
+        value: "require"
+      - key: SESSION_SECRET
+        generateValue: true
+
+      # Firebase client : Firebase Console > Parametres du projet > General
+      # Parametres de votre application > Web
+      - key: VITE_FIREBASE_API_KEY
+        sync: false
+      - key: VITE_FIREBASE_AUTH_DOMAIN
+        sync: false
+      - key: VITE_FIREBASE_PROJECT_ID
+        sync: false
+      - key: VITE_FIREBASE_STORAGE_BUCKET
+        sync: false
+      - key: VITE_FIREBASE_MESSAGING_SENDER_ID
+        sync: false
+      - key: VITE_FIREBASE_APP_ID
+        sync: false
+
+      # Firebase Admin : Firebase Console > Parametres du projet >
+      # Comptes de service > Generer une nouvelle cle privee
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      - key: FIREBASE_CLIENT_EMAIL
+        sync: false
+      # Pour FIREBASE_PRIVATE_KEY : coller la cle complete dans le
+      # dashboard Render, avec les retours a la ligne convertis en \n
+      - key: FIREBASE_PRIVATE_KEY
+        sync: false

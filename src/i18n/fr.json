@@ -286,7 +286,7 @@
     "next": "Mois suivant"
   },
   "home": {
-    "badge": "Votre budget, en francs CFA",
+    "badge": "Votre budget",
     "title": "Vos finances, simplement claires",
     "subtitle": "Finance App réunit vos revenus, vos dépenses et vos statistiques au même endroit, en français comme en anglais, et dans la devise de votre choix.",
     "primaryCta": "Créer mon compte",
