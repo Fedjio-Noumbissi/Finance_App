@@ -7,6 +7,7 @@ import { users, type UserRole } from '#/lib/db/schema'
 
 import { requireUserId } from '#/lib/auth/session'
 
+import { doitEtreAdmin } from './admin'
 import { closeAppSession, openAppSession } from './session'
 
 export interface SyncedProfile {
@@ -52,10 +53,14 @@ async function upsertUser(
     .where(or(eq(users.firebaseUid, uid), eq(users.email, email)))
     .limit(1)
 
+  // Le compte designe par ADMIN_EMAIL est promu a chaque connexion : cela
+  // couvre aussi une base deja existante ou le role valait encore 'user'.
+  const role = doitEtreAdmin(email) ? ('admin' as const) : undefined
+
   if (existing) {
     const [updated] = await db
       .update(users)
-      .set({ firebaseUid: uid })
+      .set({ firebaseUid: uid, ...(role ? { role } : {}) })
       .where(eq(users.id, existing.id))
       .returning(profileColumns)
 
@@ -64,7 +69,7 @@ async function upsertUser(
 
   const [created] = await db
     .insert(users)
-    .values({ firebaseUid: uid, email, languePreferee })
+    .values({ firebaseUid: uid, email, languePreferee, ...(role ? { role } : {}) })
     .returning(profileColumns)
 
   return created

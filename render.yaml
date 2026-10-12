@@ -38,6 +38,10 @@ services:
       - key: SESSION_SECRET
         generateValue: true
 
+      # Adresse e-mail promue automatiquement au role admin a la connexion.
+      - key: ADMIN_EMAIL
+        sync: false
+
       # Firebase client : Firebase Console > Parametres du projet > General
       # Parametres de votre application > Web
       - key: VITE_FIREBASE_API_KEY
